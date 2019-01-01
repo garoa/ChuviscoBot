@@ -33,6 +33,10 @@ import logging
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+URL_WIKI = "https://garoa.net.br/wiki"
+URL_EVENTOS_REGULARES = f"{URL_WIKI}/Eventos_Regulares"
+URL_PROXIMOS_EVENTOS = f"{URL_WIKI}/Próximos_Eventos"
+
 
 class Evento:
   def __str__(self):
@@ -53,7 +57,7 @@ def replace_wikilink(original):
     title = b
     if "|" in b:
       pagename, title = b.split("|")
-    com_link = f"{a}<a href='https://garoa.net.br/wiki/{pagename}'>{title}</a>{c}"
+    com_link = f"{a}<a href='{URL_WIKI}/{pagename}'>{title}</a>{c}"
     return com_link
   except:
     return original
@@ -78,10 +82,15 @@ def replace_links(txt):
   return txt
 
 
+# As rotinas de parsing abaixo são um tanto estritas e só entendem uma formatação bem específica
+# Pare tornar esse código mais tolerante a pequenas variações tipicamente introduzidas por edições humanas,
+# será provavelmente necessário utilizar expressões regulares.
+# Por enquanto as rotinas abaixo são suficientes como prova de conceito.
+
 agenda = []
 def parse_evento(line):
   global agenda
-  head, tail = line.strip().split("''':")
+  head, tail = line.strip().split(":'''")
 
   e = Evento()
   e.nome = replace_links(tail)
@@ -90,14 +99,69 @@ def parse_evento(line):
   agenda.append(e)
 
 
+regulares = []
+def parse_evento_regular(line, recorrencia):
+  global regulares
+  head, tail = line.strip().split(":'''")
+
+  e = Evento()
+  e.nome = replace_links(tail)
+  e.recorrencia = recorrencia
+  e.data = head.split("*'''")[1]
+  regulares.append(e)
+
+
+comment = False
+def parse_Eventos_Regulares():
+  comment = False
+  r = requests.get(f"{URL_EVENTOS_REGULARES}?action=raw")
+  for line in r.text.split('\n'):
+    line = line.strip()
+    print(f"LINE: '{line}'")
+    if comment:
+      if line.endswith("-->"):
+        comment = False
+        print("comment = False")
+      else:
+        # TODO: salvar conteudo dos comentarios aqui
+        print("OUTRO")
+        continue
+
+    if line.startswith("<!--"):
+      comment = True
+      print("comment = True")
+      # Existe a possibilidade de ser um comentário de uma única linha.
+      # Portanto precisamos checar novamente:
+      if line.endswith("-->"):
+        comment = False
+        print("<...> comment = False")
+
+    elif line.startswith("==") and line.endswith("=="):
+      if "Semanais" in line:
+        recorrencia = "Semanal"
+      elif "Quinzenais" in line:
+        recorrencia = "Quinzenal"
+      elif "Mensais" in line:
+        recorrencia = "Mensal"
+      else:
+        recorrencia = None
+
+    elif line.startswith("*'''"):
+      try:
+        parse_evento_regular(line, recorrencia)
+      except:
+        print(f"Falha ao tentar parsear linha da página 'Eventos Regulares':\n===\n{line}\n===")
+
+
 def parse_Proximos_Eventos():
-  r = requests.get("https://garoa.net.br/wiki/Pr%C3%B3ximos_Eventos?action=raw")
+  r = requests.get(f"{URL_PROXIMOS_EVENTOS}?action=raw")
   for line in r.text.split('\n'):
     if line.startswith("*'''"):
       try:
         parse_evento(line)
       except:
         print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
+
 
 if len(sys.argv) != 2:
   print(f"Usage:    {sys.argv[0]} TOKEN")
@@ -108,41 +172,56 @@ bot = telegram.Bot(token)
 updater = Updater(token)
 dispatcher = updater.dispatcher
 parse_Proximos_Eventos()
+parse_Eventos_Regulares()
 
 BOT_CMDS = dict()
 def bot_command(func):
-	"""Register a function as a Telegram Bot command."""
-	name = func.__name__.split("cmd_")[1]
-	print(f"Registering /{name} command.")
+  """Register a function as a Telegram Bot command."""
+  name = func.__name__.split("cmd_")[1]
+  print(f"Registering /{name} command.")
 
-	@functools.wraps(func)
-	def func_wrapper(*args, **kwargs):
-	  print(f"/{name}... ", end="")
-	  ret_val = func(*args, **kwargs)
-	  print("DONE")
-	  return ret_val
+  @functools.wraps(func)
+  def func_wrapper(*args, **kwargs):
+    print(f"/{name}... ", end="")
+    ret_val = func(*args, **kwargs)
+    print("DONE")
+    return ret_val
 
-	if name not in BOT_CMDS:
-	  dispatcher.add_handler(CommandHandler(name, func_wrapper))
+  if name not in BOT_CMDS:
+    dispatcher.add_handler(CommandHandler(name, func_wrapper))
 
-	BOT_CMDS[name] = func.__doc__
-	return func_wrapper
+  BOT_CMDS[name] = func.__doc__
+  return func_wrapper
+
 
 @bot_command
 def cmd_help(bot, update):
-	"""Exibe os comandos disponíveis."""
-	cmd_docs = "\n".join([f"  <b>/{name}</b> - {doc}" for name, doc in BOT_CMDS.items()])
-	update.message.reply_text(f"Comandos disponíveis:\n{cmd_docs}", parse_mode="HTML")
+  """Exibe os comandos disponíveis."""
+  cmd_docs = "\n".join([f"  <b>/{name}</b> - {doc}" for name, doc in BOT_CMDS.items()])
+  update.message.reply_text(f"Comandos disponíveis:\n{cmd_docs}", parse_mode="HTML")
+
 
 @bot_command
-def cmd_eventos(bot, update):
-	"""Lista as atividades da agenda do Garoa Hacker Clube."""
-	lista_de_eventos = "\n".join([f"  - {evento}" for evento in agenda])
-	print(lista_de_eventos)
-	bot.send_message(chat_id=update.message.chat_id,
-	                 parse_mode="HTML",
-	                 text=f"Esta é a lista completa dos eventos futuros:\n{lista_de_eventos}")
+def cmd_agenda(bot, update):
+  """Lista as próximas atividades agendas no Garoa Hacker Clube."""
+  eventos_proximos = "\n".join([f"  - {evento}" for evento in agenda])
+  bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=f"Próximos eventos:\n{eventos_proximos}\n")
 
+
+@bot_command
+def cmd_regulares(bot, update):
+  """Lista as atividades que acontecem recorrentemente no Garoa."""
+  print(regulares)
+  eventos_regulares = "\n".join([f"  - {evento}" for evento in regulares])
+  bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=f"Eventos regulares:\n{eventos_regulares}\n")
+
+print(regulares)
+
+print(agenda)
 
 # Start the bot
 updater.start_polling()
