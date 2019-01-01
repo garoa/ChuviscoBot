@@ -24,6 +24,7 @@
 #  
 
 import functools
+import requests
 import sys
 
 from telegram.ext import CommandHandler, Updater
@@ -32,27 +33,71 @@ import logging
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+
 class Evento:
   def __str__(self):
     return self.__repr__()
 
   def __repr__(self):
-    return f"<strong>{self.nome}:</strong> {self.data} {self.horario} ({self.recorrencia})"
+    if self.recorrencia:
+      return f"<strong>{self.data}:</strong> {self.nome} ({self.recorrencia})"
+    else:
+      return f"<strong>{self.data}:</strong> {self.nome}"
+
+
+def replace_wikilink(original):
+  try:
+    a, b = original.split("[[")
+    b, c = b.split("]]")
+    pagename = b
+    title = b
+    if "|" in b:
+      pagename, title = b.split("|")
+    com_link = f"{a}<a href='https://garoa.net.br/wiki/{pagename}'>{title}</a>{c}"
+    return com_link
+  except:
+    return original
+
+
+def replace_external_link(original):
+  try:
+    a, b = original.split("[")
+    b, c = b.split("]")
+    x = b.split()
+    url = x.pop(0)
+    title = " ".join(x)
+    com_link = f"{a}<a href='{url}'>{title}</a>{c}"
+    return com_link
+  except:
+    return original
+
+
+def replace_links(txt):
+  txt = replace_wikilink(txt)
+  txt = replace_external_link(txt)
+  return txt
+
 
 agenda = []
-e1 = Evento()
-e1.nome = "Monitoramento da Qualidade do Ar"
-e1.recorrencia = "semanal"
-e1.data = "2a-feira"
-e1.horario = "19h30"
-agenda.append(e1)
+def parse_evento(line):
+  global agenda
+  head, tail = line.strip().split("''':")
 
-e2 = Evento()
-e2.nome = "Interpretadores (com Luciano Ramalho)"
-e2.recorrencia = "semanal"
-e2.data = "6a-feira"
-e2.horario = "19h30"
-agenda.append(e2)
+  e = Evento()
+  e.nome = replace_links(tail)
+  e.recorrencia = None
+  e.data = head.split("*'''")[1]
+  agenda.append(e)
+
+
+def parse_Proximos_Eventos():
+  r = requests.get("https://garoa.net.br/wiki/Pr%C3%B3ximos_Eventos?action=raw")
+  for line in r.text.split('\n'):
+    if line.startswith("*'''"):
+      try:
+        parse_evento(line)
+      except:
+        print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
 
 if len(sys.argv) != 2:
   print(f"Usage:    {sys.argv[0]} TOKEN")
@@ -62,6 +107,7 @@ token = sys.argv[1]
 bot = telegram.Bot(token)
 updater = Updater(token)
 dispatcher = updater.dispatcher
+parse_Proximos_Eventos()
 
 BOT_CMDS = dict()
 def bot_command(func):
