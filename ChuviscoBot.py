@@ -24,77 +24,15 @@
 #  
 
 import functools
-import requests
 import sys
 
 from telegram.ext import CommandHandler, Updater
 import telegram
 import logging
 
-from agenda import Evento
+from agenda import Agenda
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-# As rotinas de parsing abaixo são um tanto estritas e só entendem uma formatação bem específica
-# Pare tornar esse código mais tolerante a pequenas variações tipicamente introduzidas por edições humanas,
-# será provavelmente necessário utilizar expressões regulares.
-# Por enquanto as rotinas abaixo são suficientes como prova de conceito.
-
-URL_WIKI = "https://garoa.net.br/wiki"
-URL_EVENTOS_REGULARES = f"{URL_WIKI}/Eventos_Regulares"
-URL_PROXIMOS_EVENTOS = f"{URL_WIKI}/Próximos_Eventos"
-
-proximos = []
-regulares = []
-
-comment = False
-def parse_Eventos_Regulares():
-  global regulares, comment
-  comment = False
-  r = requests.get(f"{URL_EVENTOS_REGULARES}?action=raw")
-  for line in r.text.split('\n'):
-    line = line.strip()
-    if comment:
-      if line.endswith("-->"):
-        comment = False
-      else:
-        # TODO: salvar conteudo dos comentarios aqui
-        continue
-
-    if line.startswith("<!--"):
-      comment = True
-      # Existe a possibilidade de ser um comentário de uma única linha.
-      # Portanto precisamos checar novamente:
-      if line.endswith("-->"):
-        comment = False
-
-    elif line.startswith("==") and line.endswith("=="):
-      if "Semanais" in line:
-        recorrencia = "Semanal"
-      elif "Quinzenais" in line:
-        recorrencia = "Quinzenal"
-      elif "Mensais" in line:
-        recorrencia = "Mensal"
-      else:
-        recorrencia = None
-
-    elif line.startswith("*'''"):
-      try:
-        regulares.append(Evento(line, recorrencia))
-      except:
-        print(f"Falha ao tentar parsear linha da página 'Eventos Regulares':\n===\n{line}\n===")
-
-
-def parse_Proximos_Eventos():
-  global proximos
-  r = requests.get(f"{URL_PROXIMOS_EVENTOS}?action=raw")
-  for line in r.text.split('\n'):
-    if line.startswith("*'''"):
-      try:
-        proximos.append(Evento(line))
-      except:
-        print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
-
 
 if len(sys.argv) != 2:
   print(f"Usage:    {sys.argv[0]} TOKEN")
@@ -104,8 +42,7 @@ token = sys.argv[1]
 bot = telegram.Bot(token)
 updater = Updater(token)
 dispatcher = updater.dispatcher
-parse_Proximos_Eventos()
-parse_Eventos_Regulares()
+agenda = Agenda()
 
 BOT_CMDS = dict()
 def bot_command(func):
@@ -120,9 +57,7 @@ def bot_command(func):
     print("DONE")
     return ret_val
 
-  if name not in BOT_CMDS:
-    dispatcher.add_handler(CommandHandler(name, func_wrapper))
-
+  dispatcher.add_handler(CommandHandler(name, func_wrapper))
   BOT_CMDS[name] = func.__doc__
   return func_wrapper
 
@@ -137,7 +72,7 @@ def cmd_help(bot, update):
 @bot_command
 def cmd_proximos(bot, update):
   """Lista os próximos eventos na agenda do Garoa."""
-  eventos_proximos = "\n".join([f"  - {evento}" for evento in proximos])
+  eventos_proximos = "\n".join([f"  - {evento}" for evento in agenda.proximos])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
                    text=f"Próximos eventos:\n{eventos_proximos}\n")
@@ -146,7 +81,7 @@ def cmd_proximos(bot, update):
 @bot_command
 def cmd_regulares(bot, update):
   """Lista as atividades recorrentes."""
-  eventos_regulares = "\n".join([f"  - {evento}" for evento in regulares])
+  eventos_regulares = "\n".join([f"  - {evento}" for evento in agenda.regulares])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
                    text=f"Eventos regulares:\n{eventos_regulares}\n")

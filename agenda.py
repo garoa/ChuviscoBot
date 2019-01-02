@@ -22,6 +22,7 @@
 #  MA 02110-1301, USA.
 #  
 #  
+import requests
 
 URL_WIKI = "https://garoa.net.br/wiki"
 URL_EVENTOS_REGULARES = f"{URL_WIKI}/Eventos_Regulares"
@@ -94,3 +95,61 @@ class Evento:
     self.nome = self.replace_links(tail)
     self.recorrencia = recorrencia
     self.data = head.split("*'''")[1]
+
+
+class Agenda():
+  # As rotinas de parsing abaixo são um tanto estritas e só entendem uma formatação bem específica
+  # Pare tornar esse código mais tolerante a pequenas variações tipicamente introduzidas por edições humanas,
+  # será provavelmente necessário utilizar expressões regulares.
+  # Por enquanto as rotinas abaixo são suficientes como prova de conceito.
+
+  def __init__(self):
+    self.load_Proximos_Eventos()
+    self.load_Eventos_Regulares()
+
+  def load_Eventos_Regulares(self):
+    self.regulares = []
+    comment = False
+    r = requests.get(f"{URL_EVENTOS_REGULARES}?action=raw")
+    for line in r.text.split('\n'):
+      line = line.strip()
+      if comment:
+        if line.endswith("-->"):
+          comment = False
+        else:
+          # TODO: salvar conteudo dos comentarios aqui
+          continue
+
+      if line.startswith("<!--"):
+        comment = True
+        # Existe a possibilidade de ser um comentário de uma única linha.
+        # Portanto precisamos checar novamente:
+        if line.endswith("-->"):
+          comment = False
+
+      elif line.startswith("==") and line.endswith("=="):
+        if "Semanais" in line:
+          recorrencia = "Semanal"
+        elif "Quinzenais" in line:
+          recorrencia = "Quinzenal"
+        elif "Mensais" in line:
+          recorrencia = "Mensal"
+        else:
+          recorrencia = None
+
+      elif line.startswith("*'''"):
+        try:
+          self.regulares.append(Evento(line, recorrencia))
+        except:
+          print(f"Falha ao tentar parsear linha da página 'Eventos Regulares':\n===\n{line}\n===")
+
+
+  def load_Proximos_Eventos(self):
+    self.proximos = []
+    r = requests.get(f"{URL_PROXIMOS_EVENTOS}?action=raw")
+    for line in r.text.split('\n'):
+      if line.startswith("*'''"):
+        try:
+          self.proximos.append(Evento(line))
+        except:
+          print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
