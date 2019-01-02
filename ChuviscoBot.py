@@ -31,110 +31,42 @@ from telegram.ext import CommandHandler, Updater
 import telegram
 import logging
 
+from agenda import Evento
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-URL_WIKI = "https://garoa.net.br/wiki"
-URL_EVENTOS_REGULARES = f"{URL_WIKI}/Eventos_Regulares"
-URL_PROXIMOS_EVENTOS = f"{URL_WIKI}/Próximos_Eventos"
-
-
-class Evento:
-  def __str__(self):
-    return self.__repr__()
-
-  def __repr__(self):
-    if self.recorrencia:
-      return f"<strong>{self.data}:</strong> {self.nome} ({self.recorrencia})"
-    else:
-      return f"<strong>{self.data}:</strong> {self.nome}"
-
-
-def replace_wikilink(original):
-  try:
-    a, b = original.split("[[")
-    b, c = b.split("]]")
-    pagename = b
-    title = b
-    if "|" in b:
-      pagename, title = b.split("|")
-    com_link = f"{a}<a href='{URL_WIKI}/{pagename}'>{title}</a>{c}"
-    return com_link
-  except:
-    return original
-
-
-def replace_external_link(original):
-  try:
-    a, b = original.split("[")
-    b, c = b.split("]")
-    x = b.split()
-    url = x.pop(0)
-    title = " ".join(x)
-    com_link = f"{a}<a href='{url}'>{title}</a>{c}"
-    return com_link
-  except:
-    return original
-
-
-def replace_links(txt):
-  txt = replace_wikilink(txt)
-  txt = replace_external_link(txt)
-  return txt
-
 
 # As rotinas de parsing abaixo são um tanto estritas e só entendem uma formatação bem específica
 # Pare tornar esse código mais tolerante a pequenas variações tipicamente introduzidas por edições humanas,
 # será provavelmente necessário utilizar expressões regulares.
 # Por enquanto as rotinas abaixo são suficientes como prova de conceito.
 
-agenda = []
-def parse_evento(line):
-  global agenda
-  head, tail = line.strip().split(":'''")
+URL_WIKI = "https://garoa.net.br/wiki"
+URL_EVENTOS_REGULARES = f"{URL_WIKI}/Eventos_Regulares"
+URL_PROXIMOS_EVENTOS = f"{URL_WIKI}/Próximos_Eventos"
 
-  e = Evento()
-  e.nome = replace_links(tail)
-  e.recorrencia = None
-  e.data = head.split("*'''")[1]
-  agenda.append(e)
-
-
+proximos = []
 regulares = []
-def parse_evento_regular(line, recorrencia):
-  global regulares
-  head, tail = line.strip().split(":'''")
-
-  e = Evento()
-  e.nome = replace_links(tail)
-  e.recorrencia = recorrencia
-  e.data = head.split("*'''")[1]
-  regulares.append(e)
-
 
 comment = False
 def parse_Eventos_Regulares():
+  global regulares, comment
   comment = False
   r = requests.get(f"{URL_EVENTOS_REGULARES}?action=raw")
   for line in r.text.split('\n'):
     line = line.strip()
-    print(f"LINE: '{line}'")
     if comment:
       if line.endswith("-->"):
         comment = False
-        print("comment = False")
       else:
         # TODO: salvar conteudo dos comentarios aqui
-        print("OUTRO")
         continue
 
     if line.startswith("<!--"):
       comment = True
-      print("comment = True")
       # Existe a possibilidade de ser um comentário de uma única linha.
       # Portanto precisamos checar novamente:
       if line.endswith("-->"):
         comment = False
-        print("<...> comment = False")
 
     elif line.startswith("==") and line.endswith("=="):
       if "Semanais" in line:
@@ -148,17 +80,18 @@ def parse_Eventos_Regulares():
 
     elif line.startswith("*'''"):
       try:
-        parse_evento_regular(line, recorrencia)
+        regulares.append(Evento(line, recorrencia))
       except:
         print(f"Falha ao tentar parsear linha da página 'Eventos Regulares':\n===\n{line}\n===")
 
 
 def parse_Proximos_Eventos():
+  global proximos
   r = requests.get(f"{URL_PROXIMOS_EVENTOS}?action=raw")
   for line in r.text.split('\n'):
     if line.startswith("*'''"):
       try:
-        parse_evento(line)
+        proximos.append(Evento(line))
       except:
         print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
 
@@ -202,9 +135,9 @@ def cmd_help(bot, update):
 
 
 @bot_command
-def cmd_agenda(bot, update):
-  """Lista as próximas atividades agendas no Garoa Hacker Clube."""
-  eventos_proximos = "\n".join([f"  - {evento}" for evento in agenda])
+def cmd_proximos(bot, update):
+  """Lista os próximos eventos na agenda do Garoa."""
+  eventos_proximos = "\n".join([f"  - {evento}" for evento in proximos])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
                    text=f"Próximos eventos:\n{eventos_proximos}\n")
@@ -212,16 +145,12 @@ def cmd_agenda(bot, update):
 
 @bot_command
 def cmd_regulares(bot, update):
-  """Lista as atividades que acontecem recorrentemente no Garoa."""
-  print(regulares)
+  """Lista as atividades recorrentes."""
   eventos_regulares = "\n".join([f"  - {evento}" for evento in regulares])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
                    text=f"Eventos regulares:\n{eventos_regulares}\n")
 
-print(regulares)
-
-print(agenda)
 
 # Start the bot
 updater.start_polling()
