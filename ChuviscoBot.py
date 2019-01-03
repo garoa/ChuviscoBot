@@ -30,6 +30,7 @@ from bot_setup import (bot_setup,
 
 if len(sys.argv) != 2:
   print(f"Usage:    {sys.argv[0]} TOKEN")
+  print("          TOKEN: Valor de token gerado pelo BotFather após o registro de um novo bot.")
   sys.exit(-1)
 else:
   token = sys.argv[1]
