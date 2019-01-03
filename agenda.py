@@ -22,11 +22,13 @@
 #  MA 02110-1301, USA.
 #  
 #  
-import requests
+import pywikibot
+from pywikibot.config2 import register_family_file
 
-URL_WIKI = "https://garoa.net.br/wiki"
-URL_EVENTOS_REGULARES = f"{URL_WIKI}/Eventos_Regulares"
-URL_PROXIMOS_EVENTOS = f"{URL_WIKI}/Próximos_Eventos"
+URL_WIKI = "https://garoa.net.br"
+register_family_file('garoa', URL_WIKI)
+site = pywikibot.Site()
+
 
 
 class Evento:
@@ -56,7 +58,7 @@ class Evento:
       title = b
       if "|" in b:
         pagename, title = b.split("|")
-      com_link = f"{a}<a href='{URL_WIKI}/{pagename}'>{title}</a>{c}"
+      com_link = f"{a}<a href='{URL_WIKI}/wiki/{pagename}'>{title}</a>{c}"
       return com_link
     except:
       return original
@@ -104,14 +106,15 @@ class Agenda():
   # Por enquanto as rotinas abaixo são suficientes como prova de conceito.
 
   def __init__(self):
+    self.page_regulares = pywikibot.Page(site, "Eventos Regulares")
+    self.page_proximos = pywikibot.Page(site, "Próximos Eventos")
     self.load_Proximos_Eventos()
     self.load_Eventos_Regulares()
 
   def load_Eventos_Regulares(self):
     self.regulares = []
     comment = False
-    r = requests.get(f"{URL_EVENTOS_REGULARES}?action=raw")
-    for line in r.text.split('\n'):
+    for line in self.page_regulares.text.split('\n'):
       line = line.strip()
       if comment:
         if line.endswith("-->"):
@@ -146,8 +149,7 @@ class Agenda():
 
   def load_Proximos_Eventos(self):
     self.proximos = []
-    r = requests.get(f"{URL_PROXIMOS_EVENTOS}?action=raw")
-    for line in r.text.split('\n'):
+    for line in self.page_proximos.text.split('\n'):
       if line.startswith("*'''"):
         try:
           self.proximos.append(Evento(line))
