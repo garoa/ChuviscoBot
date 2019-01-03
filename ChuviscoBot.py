@@ -61,4 +61,15 @@ def cmd_regulares(bot, update):
                    parse_mode="HTML",
                    text=f"Eventos regulares:\n{eventos_regulares}\n")
 
+@bot_command
+def cmd_agenda(bot, update):
+  """Lista a agenda completa."""
+  eventos_proximos = "\n".join([f"  - {evento}" for evento in agenda.proximos])
+  eventos_regulares = "\n".join([f"  - {evento}" for evento in agenda.regulares])
+  bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=(f"Próximos eventos:\n{eventos_proximos}\n\n"
+                         f"Eventos regulares:\n{eventos_regulares}\n"))
+
+
 bot_run()
