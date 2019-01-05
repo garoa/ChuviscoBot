@@ -106,12 +106,13 @@ class Agenda():
   # Por enquanto as rotinas abaixo são suficientes como prova de conceito.
 
   def __init__(self):
-    self.page_regulares = pywikibot.Page(site, "Eventos Regulares")
-    self.page_proximos = pywikibot.Page(site, "Próximos Eventos")
+    self.page_regulares = None
+    self.page_proximos = None
     self.load_Proximos_Eventos()
     self.load_Eventos_Regulares()
 
   def load_Eventos_Regulares(self):
+    self.page_regulares = pywikibot.Page(site, "Eventos Regulares")
     self.regulares = []
     comment = False
     for line in self.page_regulares.text.split('\n'):
@@ -148,6 +149,7 @@ class Agenda():
 
 
   def load_Proximos_Eventos(self):
+    self.page_proximos = pywikibot.Page(site, "Próximos Eventos")
     self.proximos = []
     for line in self.page_proximos.text.split('\n'):
       if line.startswith("*'''"):
