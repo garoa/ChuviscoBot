@@ -22,13 +22,40 @@
 #  MA 02110-1301, USA.
 #  
 #  
-import pywikibot
-from pywikibot.config2 import register_family_file
-
 URL_WIKI = "https://garoa.net.br"
-register_family_file('garoa', URL_WIKI)
-site = pywikibot.Site()
 
+
+def replace_wikilink(original):
+  try:
+    a, b = original.split("[[")
+    b, c = b.split("]]")
+    pagename = b
+    title = b
+    if "|" in b:
+      pagename, title = b.split("|")
+    com_link = f"{a}<a href='{URL_WIKI}/wiki/{pagename}'>{title}</a>{c}"
+    return com_link
+  except:
+    return original
+
+
+def replace_external_link(original):
+  try:
+    a, b = original.split("[")
+    b, c = b.split("]")
+    x = b.split()
+    url = x.pop(0)
+    title = " ".join(x)
+    com_link = f"{a}<a href='{url}'>{title}</a>{c}"
+    return com_link
+  except:
+    return original
+
+
+def replace_links(txt):
+  txt = replace_wikilink(txt)
+  txt = replace_external_link(txt)
+  return txt
 
 
 class Evento:
@@ -49,44 +76,10 @@ class Evento:
     else:
       return f"<strong>{self.data}:</strong> {self.nome}"
 
-
-  def replace_wikilink(self, original):
-    try:
-      a, b = original.split("[[")
-      b, c = b.split("]]")
-      pagename = b
-      title = b
-      if "|" in b:
-        pagename, title = b.split("|")
-      com_link = f"{a}<a href='{URL_WIKI}/wiki/{pagename}'>{title}</a>{c}"
-      return com_link
-    except:
-      return original
-
-
-  def replace_external_link(self, original):
-    try:
-      a, b = original.split("[")
-      b, c = b.split("]")
-      x = b.split()
-      url = x.pop(0)
-      title = " ".join(x)
-      com_link = f"{a}<a href='{url}'>{title}</a>{c}"
-      return com_link
-    except:
-      return original
-
-
-  def replace_links(self, txt):
-    txt = self.replace_wikilink(txt)
-    txt = self.replace_external_link(txt)
-    return txt
-
-
   def parse_evento(self, line):
     head, tail = line.strip().split(":'''")
 
-    self.nome = self.replace_links(tail)
+    self.nome = replace_links(tail)
     self.recorrencia = None
     self.data = head.split("*'''")[1]
 
@@ -94,7 +87,7 @@ class Evento:
   def parse_evento_regular(self, line, recorrencia):
     head, tail = line.strip().split(":'''")
 
-    self.nome = self.replace_links(tail)
+    self.nome = replace_links(tail)
     self.recorrencia = recorrencia
     self.data = head.split("*'''")[1]
 
@@ -106,13 +99,18 @@ class Agenda():
   # Por enquanto as rotinas abaixo são suficientes como prova de conceito.
 
   def __init__(self):
+    from pywikibot import Site
+    from pywikibot.config2 import register_family_file
+    register_family_file('garoa', URL_WIKI)
+    self.site = Site()
     self.page_regulares = None
     self.page_proximos = None
     self.load_Proximos_Eventos()
     self.load_Eventos_Regulares()
 
   def load_Eventos_Regulares(self):
-    self.page_regulares = pywikibot.Page(site, "Eventos Regulares")
+    from pywikibot import Page
+    self.page_regulares = Page(self.site, "Eventos Regulares")
     self.regulares = []
     comment = False
     for line in self.page_regulares.text.split('\n'):
@@ -149,7 +147,8 @@ class Agenda():
 
 
   def load_Proximos_Eventos(self):
-    self.page_proximos = pywikibot.Page(site, "Próximos Eventos")
+    from pywikibot import Page
+    self.page_proximos = Page(self.site, "Próximos Eventos")
     self.proximos = []
     for line in self.page_proximos.text.split('\n'):
       if line.startswith("*'''"):
