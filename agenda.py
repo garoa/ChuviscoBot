@@ -92,12 +92,7 @@ class Evento:
     else:
       self.parse_evento(line)
 
-
-  def __str__(self):
-    return self.__repr__()
-
-
-  def __repr__(self):
+  def date_string(self):
     dia = str(self.dia)
     h = str(self.hora)
     m = str(self.minuto)
@@ -106,10 +101,21 @@ class Evento:
     if self.minuto < 10: m = f"0{m}"
     mes = MESES[self.mes - 1]
     data = f"{self.dia_da_semana}, {dia}/{mes}/{self.ano} {h}:{m}"
+    return data
+
+  def to_html(self):
+    data = self.date_string()
     if self.recorrencia:
       return f"<strong>{data}:</strong> {self.nome} ({self.recorrencia})"
     else:
       return f"<strong>{data}:</strong> {self.nome}"
+
+  def to_wikicode(self):
+    data = self.date_string()
+    if self.recorrencia:
+      return f"*'''{data}:''' {self.nome} ({self.recorrencia})"
+    else:
+      return f"*'''{data}:''' {self.nome}"
 
   def parse_evento(self, line):
     head, tail = line.strip().split(":'''")

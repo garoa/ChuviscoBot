@@ -71,15 +71,37 @@ def test_parse_evento(given, want):
   assert want["minuto"] == got.minuto
 
 
-def test_str_evento():
+FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
+def test_evento_to_html():
   from agenda import Evento
-  e = Evento("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]")
+  e = Evento(FOO_WIKICODE)
   e.dia_da_semana = "Sexta"
   e.dia = 27
   e.mes = 7
   e.ano = 2021
   e.hora = 13
-  e.minuto = 15
+  e.minuto = 0
   e.nome = "Festa!"
-  got = str(e)
-  assert "<strong>Sexta, 27/JUL/2021 13:15:</strong> Festa!" == got
+  got = e.to_html()
+  assert "<strong>Sexta, 27/JUL/2021 13:00:</strong> Festa!" == got
+
+  e.recorrencia = "Semanal"
+  got = e.to_html()
+  assert "<strong>Sexta, 27/JUL/2021 13:00:</strong> Festa! (Semanal)" == got
+
+def test_evento_to_wikicode():
+  from agenda import Evento
+  e = Evento(FOO_WIKICODE, recorrencia=False)
+  e.dia_da_semana = "Sexta"
+  e.dia = 27
+  e.mes = 7
+  e.ano = 2021
+  e.hora = 13
+  e.minuto = 0
+  e.nome = "Festa!"
+  got = e.to_wikicode()
+  assert "*'''Sexta, 27/JUL/2021 13:00:''' Festa!" == got
+
+  e.recorrencia = "Semanal"
+  got = e.to_wikicode()
+  assert "*'''Sexta, 27/JUL/2021 13:00:''' Festa! (Semanal)" == got
