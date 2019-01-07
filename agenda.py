@@ -106,6 +106,7 @@ class Evento:
     self.nome = replace_links(tail)
     self.recorrencia = None
     self.data = head.split("*'''")[1]
+    self.parse_data_de_evento()
 
 
   def parse_evento_regular(self, line, recorrencia):
@@ -114,6 +115,21 @@ class Evento:
     self.nome = replace_links(tail)
     self.recorrencia = recorrencia
     self.data = head.split("*'''")[1]
+    self.parse_data_de_evento()
+
+  def parse_data_de_evento(self):
+    MESES = ["JAN", "FEV", "MAR", "ABR",
+             "MAI", "JUN", "JUL", "AGO",
+             "SET", "OUT", "NOV", "DEZ"]
+    self.dia_da_semana = self.data.split(", ")[0].strip()
+    _, data, hora = self.data.split()
+    dia, mes, ano = data.split("/")
+    self.dia = int(dia)
+    self.mes = 1 + MESES.index(mes)
+    self.ano = int(ano)
+    h, m = hora.split(":")
+    self.hora = int(h)
+    self.minuto = int(m)
 
 
 class Agenda():
