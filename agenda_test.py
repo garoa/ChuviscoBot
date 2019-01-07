@@ -8,9 +8,9 @@ from pytest import mark
   ("[https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/ Organização & Flush no Garoa]",
    "[https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/ Organização & Flush no Garoa]"),
 ])
-def test_replace_wikilink(given, want):
-  from agenda import replace_wikilink
-  got = replace_wikilink(given)
+def test_replace_wikilinks(given, want):
+  from agenda import replace_wikilinks
+  got = replace_wikilinks(given)
   assert want == got
 
 
@@ -18,13 +18,10 @@ def test_replace_wikilink(given, want):
   # Substitui um link externo:
   ("[https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/ Organização & Flush no Garoa]",
    "<a href='https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/'>Organização & Flush no Garoa</a>"),
-  # Mas preserva wikilink:
-  ("hoje tem [[Noite do Arduino]] no Garoa",
-   "hoje tem [[Noite do Arduino]] no Garoa")
 ])
-def test_replace_external_link(given, want):
-  from agenda import replace_external_link
-  got = replace_external_link(given)
+def test_replace_external_links(given, want):
+  from agenda import replace_external_links
+  got = replace_external_links(given)
   assert want == got
 
 
@@ -40,6 +37,13 @@ def test_replace_external_link(given, want):
     "e amanhã tem [https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/ Organização & Flush no Garoa]"),
    ("hoje tem <a href='https://garoa.net.br/wiki/Noite do Arduino'>Noite do Arduino</a>"
     "e amanhã tem <a href='https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/'>Organização & Flush no Garoa</a>")),
+  # Substitui múltiplos wikilinks:
+  ("Temos [[Noite do Arduino]] e também [[CMC]] :-)",
+   ("Temos <a href='https://garoa.net.br/wiki/Noite do Arduino'>Noite do Arduino</a>"
+    " e também <a href='https://garoa.net.br/wiki/CMC'>CMC</a> :-)")),
+  # Substitui multiplos links externos:
+  ("Links [http://exemplo.com um] e [http://exemplo.com dois]!",
+   "Links <a href='http://exemplo.com'>um</a> e <a href='http://exemplo.com'>dois</a>!"),
 ])
 def test_replace_links(given, want):
   from agenda import replace_links

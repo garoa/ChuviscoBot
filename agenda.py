@@ -25,36 +25,60 @@
 URL_WIKI = "https://garoa.net.br"
 
 
-def replace_wikilink(original):
+def replace_wikilinks(original):
+  if "[[" not in original or "]]" not in original:
+    return original
+
   try:
-    a, b = original.split("[[")
-    b, c = b.split("]]")
+    parts = original.split("[[")
+    a = parts.pop(0)
+    b = "[[".join(parts)
+
+    parts = b.split("]]")
+    b = parts.pop(0)
+    c = "]]".join(parts)
+
     pagename = b
     title = b
     if "|" in b:
       pagename, title = b.split("|")
     com_link = f"{a}<a href='{URL_WIKI}/wiki/{pagename}'>{title}</a>{c}"
-    return com_link
+    if "[[" in com_link and "]]" in com_link:
+      return replace_wikilinks(com_link)
+    else:
+      return com_link
   except:
     return original
 
 
-def replace_external_link(original):
+def replace_external_links(original):
+  if "[" not in original or "]" not in original:
+    return original
+
   try:
-    a, b = original.split("[")
-    b, c = b.split("]")
+    parts = original.split("[")
+    a = parts.pop(0)
+    b = "[".join(parts)
+
+    parts = b.split("]")
+    b = parts.pop(0)
+    c = "]".join(parts)
+    
     x = b.split()
     url = x.pop(0)
     title = " ".join(x)
     com_link = f"{a}<a href='{url}'>{title}</a>{c}"
-    return com_link
+    if "[" in com_link and "]" in com_link:
+      return replace_external_links(com_link)
+    else:
+      return com_link
   except:
     return original
 
 
 def replace_links(txt):
-  txt = replace_wikilink(txt)
-  txt = replace_external_link(txt)
+  txt = replace_wikilinks(txt)
+  txt = replace_external_links(txt)
   return txt
 
 
