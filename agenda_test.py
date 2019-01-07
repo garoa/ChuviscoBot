@@ -53,8 +53,8 @@ def test_replace_links(given, want):
 
 @mark.parametrize("given,want",[
   # :
-  ("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]", {"dia": 17,
-                                                              "dia_da_semana": "Quinta",
+  ("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]", {"dia_da_semana": "Quinta",
+                                                              "dia": 17,
                                                               "mes": 1,
                                                               "ano": 2019,
                                                               "hora": 19,
@@ -69,3 +69,17 @@ def test_parse_evento(given, want):
   assert want["ano"] == got.ano
   assert want["hora"] == got.hora
   assert want["minuto"] == got.minuto
+
+
+def test_str_evento():
+  from agenda import Evento
+  e = Evento("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]")
+  e.dia_da_semana = "Sexta"
+  e.dia = 27
+  e.mes = 7
+  e.ano = 2021
+  e.hora = 13
+  e.minuto = 15
+  e.nome = "Festa!"
+  got = str(e)
+  assert "<strong>Sexta, 27/JUL/2021 13:15:</strong> Festa!" == got

@@ -81,6 +81,9 @@ def replace_links(txt):
   txt = replace_external_links(txt)
   return txt
 
+MESES = ["JAN", "FEV", "MAR", "ABR",
+         "MAI", "JUN", "JUL", "AGO",
+         "SET", "OUT", "NOV", "DEZ"]
 
 class Evento:
   def __init__(self, line, recorrencia=False):
@@ -95,10 +98,18 @@ class Evento:
 
 
   def __repr__(self):
+    dia = str(self.dia)
+    h = str(self.hora)
+    m = str(self.minuto)
+    if self.dia < 10: dia = f"0{dia}"
+    if self.hora < 10: h = f"0{h}"
+    if self.minuto < 10: m = f"0{m}"
+    mes = MESES[self.mes - 1]
+    data = f"{self.dia_da_semana}, {dia}/{mes}/{self.ano} {h}:{m}"
     if self.recorrencia:
-      return f"<strong>{self.data}:</strong> {self.nome} ({self.recorrencia})"
+      return f"<strong>{data}:</strong> {self.nome} ({self.recorrencia})"
     else:
-      return f"<strong>{self.data}:</strong> {self.nome}"
+      return f"<strong>{data}:</strong> {self.nome}"
 
   def parse_evento(self, line):
     head, tail = line.strip().split(":'''")
@@ -118,9 +129,6 @@ class Evento:
     self.parse_data_de_evento()
 
   def parse_data_de_evento(self):
-    MESES = ["JAN", "FEV", "MAR", "ABR",
-             "MAI", "JUN", "JUL", "AGO",
-             "SET", "OUT", "NOV", "DEZ"]
     self.dia_da_semana = self.data.split(", ")[0].strip()
     _, data, hora = self.data.split()
     dia, mes, ano = data.split("/")
