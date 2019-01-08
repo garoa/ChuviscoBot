@@ -126,10 +126,16 @@ def test_evento_to_wikicode():
 
 
 @mark.parametrize("given,want",[
-   # Um caso típico:
+   # Atividade mensal:
    (("*'''3ª terça-feira do mês, 19h30:''' [[CMC|Reunião do Conselho Manda-Chuva]]", "Mensal"),
    {"dia_da_semana": "Terça",
             "ordem": 3,
+             "hora": 19,
+           "minuto": 30}),
+   # Atividade semanal:
+   (("*'''6as-feiras, 19h30:''' [[Turing_Clube/Oficina_de_Linguagens_de_Programação]]", "Semanal"),
+   {"dia_da_semana": "Sexta",
+            "ordem": None,
              "hora": 19,
            "minuto": 30}),
 ])

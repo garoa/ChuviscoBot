@@ -132,10 +132,25 @@ class Evento:
     self.nome = replace_links(tail)
     self.recorrencia = recorrencia
     self.data = head.split("*'''")[1]
-    a, b = self.data.split("-feira do mês, ")
-    ordem, d = a.split()
-    self.ordem = int(ordem[0])
-    self.dia_da_semana = d[0].upper() + d[1:]
+    if recorrencia == "Mensal":
+      a, b = self.data.split("-feira do mês, ")
+      ordem, d = a.split()
+      self.ordem = int(ordem[0])
+      self.dia_da_semana = d[0].upper() + d[1:]
+    elif recorrencia == "Semanal":
+      a, b = self.data.split(", ")
+      self.ordem = None
+      DIAS = {
+        "2as-feiras": "Segunda",
+        "3as-feiras": "Terça",
+        "4as-feiras": "Quarta",
+        "5as-feiras": "Quinta",
+        "6as-feiras": "Sexta",
+        "Sábados": "Sábado",
+        "Domingos": "Domingo"
+      }
+      self.dia_da_semana = DIAS[a]
+
     h, m = b.split("h")
     self.hora = int(h)
     self.minuto = int(m)
