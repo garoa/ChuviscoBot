@@ -52,13 +52,30 @@ def test_replace_links(given, want):
 
 
 @mark.parametrize("given,want",[
-  # :
-  ("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]", {"dia_da_semana": "Quinta",
-                                                              "dia": 17,
-                                                              "mes": 1,
-                                                              "ano": 2019,
-                                                              "hora": 19,
-                                                              "minuto": 30}),
+   # Um caso típico:
+  ("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]",
+   {"dia_da_semana": "Quinta",
+              "dia": 17,
+              "mes": 1,
+              "ano": 2019,
+             "hora": 19,
+           "minuto": 30}),
+   # com dia e hora menores que dez:
+  ("*'''Sábado, 7/DEZ/2019 9:00:''' [[Noite do Arduino]]",
+   {"dia_da_semana": "Sábado",
+              "dia": 7,
+              "mes": 12,
+              "ano": 2019,
+             "hora": 9,
+           "minuto": 0}),
+   # com dia e hora menores que dez (com um zero à esquerda):
+  ("*'''Sábado, 07/DEZ/2019 09:00:''' [[Noite do Arduino]]",
+   {"dia_da_semana": "Sábado",
+              "dia": 7,
+              "mes": 12,
+              "ano": 2019,
+             "hora": 9,
+           "minuto": 0}),
 ])
 def test_parse_evento(given, want):
   from agenda import Evento
@@ -88,6 +105,7 @@ def test_evento_to_html():
   e.recorrencia = "Semanal"
   got = e.to_html()
   assert "<strong>Sexta, 27/JUL/2021 13:00:</strong> Festa! (Semanal)" == got
+
 
 def test_evento_to_wikicode():
   from agenda import Evento
