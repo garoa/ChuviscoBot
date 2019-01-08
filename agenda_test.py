@@ -132,6 +132,24 @@ def test_evento_to_wikicode():
             "ordem": 3,
              "hora": 19,
            "minuto": 30}),
+   # Atividade mensal (na última semana):
+   (("*'''Última terça-feira do mês, 19h30:''' [[Noite de Processing]]", "Mensal"),
+   {"dia_da_semana": "Terça",
+            "ordem": -1, # menos um representando "último"
+             "hora": 19,
+           "minuto": 30}),
+   # Atividade mensal num sábado:
+   (("*'''2.o sábado do mês, 14h00:''' [[Alguma Coisa]]", "Mensal"),
+   {"dia_da_semana": "Sábado",
+            "ordem": 2,
+             "hora": 14,
+           "minuto": 0}),
+   # Atividade mensal num domingo:
+   (("*'''3.o domingo do mês, 10h15:''' [[Alguma Coisa]]", "Mensal"),
+   {"dia_da_semana": "Domingo",
+            "ordem": 3,
+             "hora": 10,
+           "minuto": 15}),
    # Atividade semanal:
    (("*'''6as-feiras, 19h30:''' [[Turing_Clube/Oficina_de_Linguagens_de_Programação]]", "Semanal"),
    {"dia_da_semana": "Sexta",

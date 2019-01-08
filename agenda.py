@@ -133,9 +133,14 @@ class Evento:
     self.recorrencia = recorrencia
     self.data = head.split("*'''")[1]
     if recorrencia == "Mensal":
-      a, b = self.data.split("-feira do mês, ")
+      a, b = self.data.split(" do mês, ")
       ordem, d = a.split()
-      self.ordem = int(ordem[0])
+      if "-feira" in d:
+        d = d.split("-feira")[0]
+      if "ltim" in ordem:
+        self.ordem = -1
+      else:
+        self.ordem = int(ordem[0])
       self.dia_da_semana = d[0].upper() + d[1:]
     elif recorrencia == "Semanal":
       a, b = self.data.split(", ")
