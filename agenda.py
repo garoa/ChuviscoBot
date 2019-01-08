@@ -172,6 +172,27 @@ class Evento:
     self.minuto = int(m)
 
 
+  def dias_para_o_evento(self):
+    """ Calcula quantos dias falta para a data
+        de um evento agendado. Esse cálculo é
+	"impreciso" porém reflete a interpretação
+	mais comum que as pessoas esperam,
+	desconsiderando a qunatidade exata de horas
+	entre o agora exato e o horário do evento.
+    """
+    import datetime
+    hoje = datetime.datetime.today()
+    event_time = datetime.datetime(self.ano,
+                                   self.mes,
+                                   self.dia,
+                                   23, 59) # 1 minuto antes da meia-noite
+                                           # de modo a se ter resultados
+                                           # coerentes, independente do horário
+                                           # do dia em que o método é chamado
+                                           # (ou seja, não importam os horários)
+    falta = event_time - hoje
+    return falta.days
+
 class Agenda():
   # As rotinas de parsing abaixo são um tanto estritas e só entendem uma formatação bem específica
   # Pare tornar esse código mais tolerante a pequenas variações tipicamente introduzidas por edições humanas,
