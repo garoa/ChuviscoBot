@@ -123,3 +123,21 @@ def test_evento_to_wikicode():
   e.recorrencia = "Semanal"
   got = e.to_wikicode()
   assert "*'''Sexta, 27/JUL/2021 13:00:''' Festa! (Semanal)" == got
+
+
+@mark.parametrize("given,want",[
+   # Um caso típico:
+   (("*'''3ª terça-feira do mês, 19h30:''' [[CMC|Reunião do Conselho Manda-Chuva]]", "Mensal"),
+   {"dia_da_semana": "Terça",
+            "ordem": 3,
+             "hora": 19,
+           "minuto": 30}),
+])
+def test_parse_evento_regular(given, want):
+  from agenda import Evento
+  nome, recorrencia = given
+  got = Evento(nome, recorrencia)
+  assert want["dia_da_semana"] == got.dia_da_semana
+  assert want["ordem"] == got.ordem
+  assert want["hora"] == got.hora
+  assert want["minuto"] == got.minuto

@@ -132,7 +132,13 @@ class Evento:
     self.nome = replace_links(tail)
     self.recorrencia = recorrencia
     self.data = head.split("*'''")[1]
-    self.parse_data_de_evento()
+    a, b = self.data.split("-feira do mês, ")
+    ordem, d = a.split()
+    self.ordem = int(ordem[0])
+    self.dia_da_semana = d[0].upper() + d[1:]
+    h, m = b.split("h")
+    self.hora = int(h)
+    self.minuto = int(m)
 
   def parse_data_de_evento(self):
     self.dia_da_semana = self.data.split(", ")[0].strip()
