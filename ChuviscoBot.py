@@ -22,6 +22,7 @@
 #  MA 02110-1301, USA.
 #
 import sys
+from infogaroa import InfoGaroa
 from agenda import Agenda
 from bot_setup import (bot_setup,
                        bot_run,
@@ -36,6 +37,7 @@ else:
   token = sys.argv[1]
   bot_setup(token)
   agenda = Agenda()
+  
 
 @bot_command
 def cmd_help(bot, update):
@@ -75,5 +77,17 @@ def cmd_agenda(bot, update):
                    text=(f"Próximos eventos:\n{eventos_proximos}\n\n"
                          f"Eventos regulares:\n{eventos_regulares}\n"))
 
-
+@bot_command
+def cmd_status(bot, update):
+  """Verifica se o garoa está aberto ou fechado"""
+  infogaroa = InfoGaroa()
+  if(infogaroa.status == "true"):
+    bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=f"O garoa está aberto :-) \n") 
+  else:
+    bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=f"O garoa está fechado :-( \n") 
+                   
 bot_run()
