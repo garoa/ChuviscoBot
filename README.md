@@ -9,7 +9,7 @@ Para ajudar no desenvolvimento, registre uma instância pessoal do bot junto ao 
 ```
 virtualenv venv3 -ppython3
 . venv3/bin/activate
-pip install pywikibot python-telegram-bot
+pip install -r requirements.txt
 python ChuviscoBot.py TOKEN
 ```
 
