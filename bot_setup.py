@@ -25,23 +25,34 @@ import functools
 import sys
 
 import logging
-from telegram.ext import CommandHandler, Updater
 import telegram
+from telegram.ext import (CommandHandler,
+                          Updater,
+                          JobQueue)
 
 dispatcher = None
 updater = None
+job_queue = None
 def bot_setup(token):
-  global dispatcher, updater
+  global dispatcher, updater, job_queue
   print("bot_setup")
   logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
   token = sys.argv[1]
   bot = telegram.Bot(token)
+  job_queue = JobQueue(bot)
   updater = Updater(token)
   dispatcher = updater.dispatcher
 
+
 def bot_run():
+  job_queue.start()
   updater.start_polling()
   updater.idle()
+
+def bot_task_daily(func):
+  from datetime import datetime
+  job_queue.run_once(func, when=datetime.now()) #FIXME! Daily!
+  return func
 
 BOT_CMDS = dict()
 def bot_command(func):

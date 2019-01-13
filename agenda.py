@@ -120,7 +120,7 @@ class Evento:
   def parse_evento(self, line):
     head, tail = line.strip().split(":'''")
 
-    self.nome = replace_links(tail)
+    self.nome = replace_links(tail).strip()
     self.recorrencia = None
     self.data = head.split("*'''")[1]
     self.parse_data_de_evento()
