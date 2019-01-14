@@ -109,7 +109,23 @@ class Evento:
     nome = " ".join(self.nome.split("<br/>"))
 
     if self.recorrencia == "Semanal":
-      pass # TODO
+      dia = self.dia_da_semana.lower()
+      dia = dia[0].upper() + dia[1:]
+      DIAS_DA_SEMANA = [
+        "Segunda",
+        "Terça",
+        "Quarta",
+        "Quinta",
+        "Sexta",
+      ]
+      if dia not in ["Sábado", "Domingo"]:
+        dia = f"{DIAS_DA_SEMANA.index(dia)+2}as-feira"
+
+      h = str(self.hora)
+      m = str(self.minuto)
+      if self.hora < 10: h = f"0{h}"
+      if self.minuto < 10: m = f"0{m}"
+      return f"<strong>{dia}s, {h}h{m}:</strong> {nome}"
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()

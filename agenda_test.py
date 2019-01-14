@@ -138,6 +138,20 @@ def test_parse_evento(given, want):
              "hora": 13,
            "minuto": 0},
   "<strong>Último sábado do mês, 13h00:</strong> Festa!"),
+  # Evento regular semanal:
+  ({"dia_da_semana": "Sexta",
+      "recorrencia": "Semanal",
+             "nome": "Festa!",
+             "hora": 13,
+           "minuto": 0},
+  "<strong>6as-feiras, 13h00:</strong> Festa!"),
+  # Evento regular mensal - final de semana:
+  ({"dia_da_semana": "Sábado",
+      "recorrencia": "Semanal",
+             "nome": "Festa!",
+             "hora": 13,
+           "minuto": 0},
+  "<strong>Sábados, 13h00:</strong> Festa!"),
 ])
 def test_evento_to_html(given, want):
   FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
