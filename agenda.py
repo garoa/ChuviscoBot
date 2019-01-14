@@ -146,14 +146,54 @@ class Evento:
       if self.minuto < 10: m = f"0{m}"
       return f"<strong>{ordem} {dia_da_semana} do mês, {h}h{m}:</strong>\n{nome}"
     else:
-      return f"<strong>{self.date_string(sep='h')}:</strong> {nome}"
+      return f"<strong>{self.date_string(sep=':')}:</strong> {nome}"
+
 
   def to_wikicode(self):
-    data = self.date_string()
-    if self.recorrencia:
-      return f"*'''{data}:''' {self.nome} ({self.recorrencia})"
+    # o parser de HTML do Telegram não entende a tag "<br/>"
+    # então vou substituir por um espaço:
+    nome = " ".join(self.nome.split("<br/>"))
+
+    if self.recorrencia == "Semanal":
+      dia = self.dia_da_semana.lower()
+      dia = dia[0].upper() + dia[1:]
+      DIAS_DA_SEMANA = [
+        "Segunda",
+        "Terça",
+        "Quarta",
+        "Quinta",
+        "Sexta",
+      ]
+      if dia not in ["Sábado", "Domingo"]:
+        dia = f"{DIAS_DA_SEMANA.index(dia)+2}as-feira"
+
+      h = str(self.hora)
+      m = str(self.minuto)
+      if self.hora < 10: h = f"0{h}"
+      if self.minuto < 10: m = f"0{m}"
+      return f"*'''{dia}s, {h}h{m}:'''<br/>{nome}"
+    elif self.recorrencia == "Mensal":
+      if self.dia_da_semana in ["Sábado", "Domingo"]:
+        dia_da_semana = self.dia_da_semana.lower()
+        if self.ordem == -1:
+          ordem = "Último"
+        else:
+          ordem = f"{self.ordem}º"
+      else:
+        dia_da_semana = f"{self.dia_da_semana.lower()}-feira"
+        if self.ordem == -1:
+          ordem = "Última"
+        else:
+          ordem = f"{self.ordem}ª"
+
+      h = str(self.hora)
+      m = str(self.minuto)
+      if self.hora < 10: h = f"0{h}"
+      if self.minuto < 10: m = f"0{m}"
+      return f"*'''{ordem} {dia_da_semana} do mês, {h}h{m}:'''<br/>{nome}"
     else:
-      return f"*'''{data}:''' {self.nome}"
+      return f"*'''{self.date_string()}:''' {nome}"
+
 
   def parse_evento(self, line):
     head, tail = line.strip().split(":'''")
