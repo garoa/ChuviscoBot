@@ -113,7 +113,7 @@ def test_parse_evento(given, want):
              "nome": "Festa!",
              "hora": 13,
            "minuto": 0},
-  "<strong>2ª sexta-feira do mês, 13h00:</strong> Festa!"),
+  "<strong>2ª sexta-feira do mês, 13h00:</strong>\nFesta!"),
   # Evento regular mensal - final de semana:
   ({"dia_da_semana": "Sábado",
       "recorrencia": "Mensal",
@@ -121,7 +121,7 @@ def test_parse_evento(given, want):
              "nome": "Festa!",
              "hora": 13,
            "minuto": 0},
-  "<strong>2º sábado do mês, 13h00:</strong> Festa!"),
+  "<strong>2º sábado do mês, 13h00:</strong>\nFesta!"),
   # Evento regular mensal na última semana:
   ({"dia_da_semana": "Sexta",
       "recorrencia": "Mensal",
@@ -129,7 +129,7 @@ def test_parse_evento(given, want):
              "nome": "Festa!",
              "hora": 13,
            "minuto": 0},
-  "<strong>Última sexta-feira do mês, 13h00:</strong> Festa!"),
+  "<strong>Última sexta-feira do mês, 13h00:</strong>\nFesta!"),
   # Evento regular mensal - no último final de semana:
   ({"dia_da_semana": "Sábado",
       "recorrencia": "Mensal",
@@ -137,21 +137,21 @@ def test_parse_evento(given, want):
              "nome": "Festa!",
              "hora": 13,
            "minuto": 0},
-  "<strong>Último sábado do mês, 13h00:</strong> Festa!"),
+  "<strong>Último sábado do mês, 13h00:</strong>\nFesta!"),
   # Evento regular semanal:
   ({"dia_da_semana": "Sexta",
       "recorrencia": "Semanal",
              "nome": "Festa!",
              "hora": 13,
            "minuto": 0},
-  "<strong>6as-feiras, 13h00:</strong> Festa!"),
+  "<strong>6as-feiras, 13h00:</strong>\nFesta!"),
   # Evento regular mensal - final de semana:
   ({"dia_da_semana": "Sábado",
       "recorrencia": "Semanal",
              "nome": "Festa!",
              "hora": 13,
            "minuto": 0},
-  "<strong>Sábados, 13h00:</strong> Festa!"),
+  "<strong>Sábados, 13h00:</strong>\nFesta!"),
 ])
 def test_evento_to_html(given, want):
   FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"

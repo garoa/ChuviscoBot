@@ -125,7 +125,7 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"<strong>{dia}s, {h}h{m}:</strong> {nome}"
+      return f"<strong>{dia}s, {h}h{m}:</strong>\n{nome}"
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
@@ -144,7 +144,7 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"<strong>{ordem} {dia_da_semana} do mês, {h}h{m}:</strong> {nome}"
+      return f"<strong>{ordem} {dia_da_semana} do mês, {h}h{m}:</strong>\n{nome}"
     else:
       return f"<strong>{self.date_string(sep='h')}:</strong> {nome}"
 
