@@ -76,6 +76,14 @@ def test_replace_links(given, want):
               "ano": 2019,
              "hora": 9,
            "minuto": 0}),
+   # Com tag <br/>:
+  ("*'''Quinta, 17/JAN/2019 19:30:'''<br/>[[Noite do Arduino]]",
+   {"dia_da_semana": "Quinta",
+              "dia": 17,
+              "mes": 1,
+              "ano": 2019,
+             "hora": 19,
+           "minuto": 30}),
 ])
 def test_parse_evento(given, want):
   from agenda import Evento
@@ -88,26 +96,68 @@ def test_parse_evento(given, want):
   assert want["minuto"] == got.minuto
 
 
-FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
-def test_evento_to_html():
+@mark.parametrize("given,want",[
+  # Evento pontual:
+  ({"dia_da_semana": "Sexta",
+             "nome": "Festa!",
+              "dia": 27,
+              "mes": 7,
+              "ano": 2021,
+             "hora": 13,
+           "minuto": 0},
+  "<strong>Sexta, 27/JUL/2021 13h00:</strong> Festa!"),
+  # Evento regular mensal:
+  ({"dia_da_semana": "Sexta",
+      "recorrencia": "Mensal",
+            "ordem": 2,
+             "nome": "Festa!",
+             "hora": 13,
+           "minuto": 0},
+  "<strong>2ª sexta-feira do mês, 13h00:</strong> Festa!"),
+  # Evento regular mensal - final de semana:
+  ({"dia_da_semana": "Sábado",
+      "recorrencia": "Mensal",
+            "ordem": 2,
+             "nome": "Festa!",
+             "hora": 13,
+           "minuto": 0},
+  "<strong>2º sábado do mês, 13h00:</strong> Festa!"),
+  # Evento regular mensal na última semana:
+  ({"dia_da_semana": "Sexta",
+      "recorrencia": "Mensal",
+            "ordem": -1, # -1 representa "último"
+             "nome": "Festa!",
+             "hora": 13,
+           "minuto": 0},
+  "<strong>Última sexta-feira do mês, 13h00:</strong> Festa!"),
+  # Evento regular mensal - no último final de semana:
+  ({"dia_da_semana": "Sábado",
+      "recorrencia": "Mensal",
+            "ordem": -1, # -1 representa "último"
+             "nome": "Festa!",
+             "hora": 13,
+           "minuto": 0},
+  "<strong>Último sábado do mês, 13h00:</strong> Festa!"),
+])
+def test_evento_to_html(given, want):
+  FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
   from agenda import Evento
   e = Evento(FOO_WIKICODE)
-  e.dia_da_semana = "Sexta"
-  e.dia = 27
-  e.mes = 7
-  e.ano = 2021
-  e.hora = 13
-  e.minuto = 0
-  e.nome = "Festa!"
+  e.dia_da_semana = given.get("dia_da_semana")
+  e.dia = given.get("dia")
+  e.mes = given.get("mes")
+  e.ano = given.get("ano")
+  e.hora = given.get("hora")
+  e.minuto = given.get("minuto")
+  e.nome = given.get("nome")
+  e.ordem = given.get("ordem")
+  e.recorrencia = given.get("recorrencia")
   got = e.to_html()
-  assert "<strong>Sexta, 27/JUL/2021 13:00:</strong> Festa!" == got
-
-  e.recorrencia = "Semanal"
-  got = e.to_html()
-  assert "<strong>Sexta, 27/JUL/2021 13:00:</strong> Festa! (Semanal)" == got
+  assert want == got
 
 
 def test_evento_to_wikicode():
+  FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
   from agenda import Evento
   e = Evento(FOO_WIKICODE, recorrencia=False)
   e.dia_da_semana = "Sexta"
@@ -153,6 +203,12 @@ def test_evento_to_wikicode():
    # Atividade semanal:
    (("*'''6as-feiras, 19h30:''' [[Turing_Clube/Oficina_de_Linguagens_de_Programação]]", "Semanal"),
    {"dia_da_semana": "Sexta",
+            "ordem": None,
+             "hora": 19,
+           "minuto": 30}),
+   # Contendo <br/>:
+   (("*'''5as-feiras, 19h30:'''<br/>[[Noite do Arduino]]", "Semanal"),
+   {"dia_da_semana": "Quinta",
             "ordem": None,
              "hora": 19,
            "minuto": 30}),
