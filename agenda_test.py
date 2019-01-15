@@ -84,6 +84,15 @@ def test_replace_links(given, want):
               "ano": 2019,
              "hora": 19,
            "minuto": 30}),
+   # Contendo 'a partir das' em evento de data fixa:
+   ("*'''Sábado, 12/MAR/2020 a partir das 16:00:''' [[Ctf_no_garoa|Capture The Flag]]",
+   {"dia_da_semana": "Sábado",
+              "dia": 12,
+              "mes": 3,
+              "ano": 2020,
+	 "a_partir": True,
+             "hora": 16,
+           "minuto": 00}),
 ])
 def test_parse_evento(given, want):
   from agenda import Evento
@@ -307,9 +316,16 @@ def test_evento_to_wikicode(given, want):
    {"dia_da_semana": "Quinta",
              "hora": 19,
            "minuto": 30}),
-   # Contendo 'a partir das':
+   # Contendo 'a partir das' em evento semanal:
    (("*'''Sábados, a partir das 16h00:''' [[Ctf_no_garoa|Capture The Flag]]", "Semanal"),
    {"dia_da_semana": "Sábado",
+	 "a_partir": True,
+             "hora": 16,
+           "minuto": 00}),
+   # Contendo 'a partir das' em evento mensal:
+   (("*'''Último sábado do mês, a partir das 16h00:''' XYZ", "Mensal"),
+   {"dia_da_semana": "Sábado",
+	    "ordem": -1,
 	 "a_partir": True,
              "hora": 16,
            "minuto": 00}),

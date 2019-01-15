@@ -251,7 +251,15 @@ class Evento:
 
   def parse_data_de_evento(self):
     self.dia_da_semana = self.data.split(", ")[0].strip()
-    _, data, hora = self.data.split()
+    partes = self.data.split()
+    _ = partes.pop(0)
+    data = partes.pop(0)
+    hora = " ".join(partes)
+
+    if "a partir das" in hora:
+      self.a_partir = True
+      hora = hora.split("a partir das")[1]
+
     dia, mes, ano = data.split("/")
     self.dia = int(dia)
     self.mes = 1 + MESES.index(mes)
