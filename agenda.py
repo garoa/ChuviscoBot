@@ -93,7 +93,7 @@ class Evento:
     else:
       self.parse_evento(line)
 
-  def date_string(self, sep=":"):
+  def date_string(self, sep=":", a_partir_das=""):
     dia = str(self.dia)
     h = str(self.hora)
     m = str(self.minuto)
@@ -101,13 +101,18 @@ class Evento:
     if self.hora < 10: h = f"0{h}"
     if self.minuto < 10: m = f"0{m}"
     mes = MESES[self.mes - 1]
-    data = f"{self.dia_da_semana}, {dia}/{mes}/{self.ano} {h}{sep}{m}"
+    data = f"{self.dia_da_semana}, {dia}/{mes}/{self.ano} {a_partir_das}{h}{sep}{m}"
     return data
 
   def to_html(self):
     # o parser de HTML do Telegram não entende a tag "<br/>"
     # então vou substituir por um espaço:
     nome = " ".join(self.nome.split("<br/>"))
+
+    if self.a_partir:
+      a_partir_das = "a partir das "
+    else:
+      a_partir_das = ""
 
     if self.recorrencia == "Semanal":
       dia = self.dia_da_semana.lower()
@@ -126,7 +131,8 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"<strong>{dia}s, {h}h{m}:</strong>\n{nome}"
+
+      return f"<strong>{dia}s, {a_partir_das}{h}h{m}:</strong>\n{nome}"
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
@@ -145,9 +151,9 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"<strong>{ordem} {dia_da_semana} do mês, {h}h{m}:</strong>\n{nome}"
+      return f"<strong>{ordem} {dia_da_semana} do mês, {a_partir_das}{h}h{m}:</strong>\n{nome}"
     else:
-      return f"<strong>{self.date_string(sep=':')}:</strong> {nome}"
+      return f"<strong>{self.date_string(sep=':', a_partir_das=a_partir_das)}:</strong> {nome}"
 
 
   def to_wikicode(self):
