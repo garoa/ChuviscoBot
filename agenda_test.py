@@ -263,6 +263,33 @@ def test_evento_to_html(given, want):
              "hora": 13,
            "minuto": 0},
   "*'''Sábados, 13h00:'''<br/>Festa!"),
+  # Evento contendo "a partir das" no horário semanal:
+  ({"dia_da_semana": "Sábado",
+      "recorrencia": "Semanal",
+             "nome": "Capture The Flag",
+         "a_partir": True,
+             "hora": 16,
+           "minuto": 0},
+  "*'''Sábados, a partir das 16h00:'''<br/>Capture The Flag"),
+  # Evento contendo "a partir das" no horário mensal:
+  ({"dia_da_semana": "Sábado",
+	    "ordem": -1,
+      "recorrencia": "Mensal",
+             "nome": "Atividade",
+         "a_partir": True,
+             "hora": 13,
+           "minuto": 0},
+  "*'''Último sábado do mês, a partir das 13h00:'''<br/>Atividade"),
+  # Evento contendo "a partir das" no horário de data fixa:
+  ({"dia_da_semana": "Sábado",
+              "dia": 30,
+              "mes": 10,
+              "ano": 2019,
+             "nome": "Alguma coisa legal...",
+         "a_partir": True,
+             "hora": 14,
+           "minuto": 30},
+  "*'''Sábado, 30/OUT/2019 a partir das 14:30:''' Alguma coisa legal..."),
 ])
 def test_evento_to_wikicode(given, want):
   FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
@@ -272,6 +299,7 @@ def test_evento_to_wikicode(given, want):
   e.dia = given.get("dia")
   e.mes = given.get("mes")
   e.ano = given.get("ano")
+  e.a_partir = given.get("a_partir")
   e.hora = given.get("hora")
   e.minuto = given.get("minuto")
   e.nome = given.get("nome")

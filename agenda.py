@@ -161,6 +161,11 @@ class Evento:
     # então vou substituir por um espaço:
     nome = " ".join(self.nome.split("<br/>"))
 
+    if self.a_partir:
+      a_partir_das = "a partir das "
+    else:
+      a_partir_das = ""
+
     if self.recorrencia == "Semanal":
       dia = self.dia_da_semana.lower()
       dia = dia[0].upper() + dia[1:]
@@ -178,7 +183,7 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"*'''{dia}s, {h}h{m}:'''<br/>{nome}"
+      return f"*'''{dia}s, {a_partir_das}{h}h{m}:'''<br/>{nome}"
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
@@ -197,9 +202,9 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"*'''{ordem} {dia_da_semana} do mês, {h}h{m}:'''<br/>{nome}"
+      return f"*'''{ordem} {dia_da_semana} do mês, {a_partir_das}{h}h{m}:'''<br/>{nome}"
     else:
-      return f"*'''{self.date_string()}:''' {nome}"
+      return f"*'''{self.date_string(sep=':', a_partir_das=a_partir_das)}:''' {nome}"
 
 
   def parse_evento(self, line):
