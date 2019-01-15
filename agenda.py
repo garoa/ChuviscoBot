@@ -87,6 +87,7 @@ MESES = ["JAN", "FEV", "MAR", "ABR",
 
 class Evento:
   def __init__(self, line, recorrencia=False):
+    self.a_partir = None
     if recorrencia:
       self.parse_evento_regular(line, recorrencia)
     else:
@@ -233,6 +234,10 @@ class Evento:
         "Domingos": "Domingo"
       }
       self.dia_da_semana = DIAS[a]
+
+    if "a partir das" in b:
+      self.a_partir = True
+      b = b.split("a partir das")[1]
 
     h, m = b.split("h")
     self.hora = int(h)

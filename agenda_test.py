@@ -272,21 +272,26 @@ def test_evento_to_wikicode(given, want):
    # Atividade semanal:
    (("*'''6as-feiras, 19h30:''' [[Turing_Clube/Oficina_de_Linguagens_de_Programação]]", "Semanal"),
    {"dia_da_semana": "Sexta",
-            "ordem": None,
              "hora": 19,
            "minuto": 30}),
    # Contendo <br/>:
    (("*'''5as-feiras, 19h30:'''<br/>[[Noite do Arduino]]", "Semanal"),
    {"dia_da_semana": "Quinta",
-            "ordem": None,
              "hora": 19,
            "minuto": 30}),
+   # Contendo 'a partir das':
+   (("*'''Sábados, a partir das 16h00:''' [[Ctf_no_garoa|Capture The Flag]]", "Semanal"),
+   {"dia_da_semana": "Sábado",
+	 "a_partir": True,
+             "hora": 16,
+           "minuto": 00}),
 ])
 def test_parse_evento_regular(given, want):
   from agenda import Evento
   nome, recorrencia = given
   got = Evento(nome, recorrencia)
-  assert want["dia_da_semana"] == got.dia_da_semana
-  assert want["ordem"] == got.ordem
-  assert want["hora"] == got.hora
-  assert want["minuto"] == got.minuto
+  assert want.get("dia_da_semana") == got.dia_da_semana
+  assert want.get("ordem") == got.ordem
+  assert want.get("a_partir") == got.a_partir
+  assert want.get("hora") == got.hora
+  assert want.get("minuto") == got.minuto
