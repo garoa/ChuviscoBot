@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  ChuviscoBot.py
+#  infogaroa.py
 #  
 #  (c)2018 Priscila Gutierres <priscila.gutierres@gmail.com>
 #  (c)2018 Felipe Correa da Silva Sanches <juca@members.fsf.org>
@@ -23,23 +23,23 @@
 #  
 #  
 
-import urllib
+from urllib import request
 import json
 
 class InfoGaroa:
   def __init__(self, END_POINT = 'http://garoahc.appspot.com/status' ):
-    f = urllib.request.urlopen(END_POINT)
-    data = json.loads(f.readline())
+    self.f = request.urlopen(END_POINT)
+    self.data = json.loads(self.f.readline())
     
   def retorna_tel(self):
-    return data.get('phone')
+    return self.data.get('phone')
 
   def retorna_twitter(self):
-    return str('@') + data.get('twitter')
+    return str('@') + self.data.get('twitter')
 		 
   def retorna_end(self):
-    return data.get('space')
+    return self.data.get('space')
 		
   def status(self):
-    return data.get('open')
+    return self.data.get('open')
 	

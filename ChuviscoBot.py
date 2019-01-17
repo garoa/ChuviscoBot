@@ -88,14 +88,14 @@ def cmd_agenda(bot, update):
 def cmd_status(bot, update):
   """Verifica se o garoa está aberto ou fechado"""
   infogaroa = InfoGaroa()
-  if(infogaroa.status == "true"):
-    bot.send_message(chat_id=update.message.chat_id,
-                   parse_mode="HTML",
-                   text=f"O garoa está aberto :-) \n") 
-  else:
+  if(infogaroa.status() == False):
     bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
                    text=f"O garoa está fechado :-( \n") 
+  else:
+    bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=f"O garoa está aberto :-) \n") 
 
 
 def get_chat_id(group_link):
