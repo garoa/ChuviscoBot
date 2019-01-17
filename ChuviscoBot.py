@@ -88,7 +88,6 @@ def cmd_cadastro(bot, update):
   """Cadastra um novo evento na wiki"""
   pass
 
-
 @bot_command
 def cmd_status(bot, update):
   """Verifica se o garoa está aberto ou fechado"""
@@ -141,5 +140,6 @@ def checa_se_vai_rolar_evento(bot, job):
                          keyboard=[[KeyboardButton(text="Tá confirmado, vai rolar!"),
                                     KeyboardButton(text="Não... foi cancelado.")]]))
         # TODO: ler a resposta do usuário e fazer alguma coisa.
+
 
 bot_run()

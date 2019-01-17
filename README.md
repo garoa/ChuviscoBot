@@ -19,6 +19,10 @@ A instância oficial deste bot ainda não está no ar. Mas o plano é hospedá-l
 
 Desse modo, qualquer pessoa poderá submeter pull-requests com aprimoramentos que estarão online assim que for feito o merge.
 
+## Contribuições
+
+Contribuições são altamente bem-vindas! O projeto pode receber contribuições por meio de Pull Requests. Por favor, verifique o arquivo Contributing.md antes de submeter uma contribuição para diretrizes gerais seguidas pelo projeto. Além de Pull Request, é possível sugerir melhorias ou reportar problemas cadastrando uma issue.
+
 ## Mais info
 
 Para mais informações, leia a thread "Grupo de Automação de Sistemas do Garoa" na lista pública de emails do Garoa Hacker Clube em:
