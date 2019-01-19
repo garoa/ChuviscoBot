@@ -93,13 +93,12 @@ def cmd_status(bot, update):
   """Verifica se o garoa está aberto ou fechado"""
   infogaroa = InfoGaroa()
   if(infogaroa.status() == False):
-    bot.send_message(chat_id=update.message.chat_id,
-                   parse_mode="HTML",
-                   text=f"O garoa está fechado :-( \n") 
+    sticker_id = 'CAADAQAD8AADBO9jB1DAGOCS82CUAg' # fechado
   else:
-    bot.send_message(chat_id=update.message.chat_id,
-                   parse_mode="HTML",
-                   text=f"O garoa está aberto :-) \n") 
+    sticker_id = 'CAADAQAD8QADBO9jB8Q5ImC_h8fqAg' # aberto
+  bot.send_sticker(chat_id=update.message.chat_id,
+                   sticker=sticker_id,
+                   disable_notification=True)
 
 
 def get_chat_id(group_link):
