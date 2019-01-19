@@ -12,16 +12,19 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
 
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+from recommonmark.parser import CommonMarkParser
+
+AUTHORS = 'Felipe "Juca" Sanches, Luciana Marques e Priscilla Gutierres'
 
 # -- Project information -----------------------------------------------------
 
 project = 'ChuviscoBot'
 copyright = '2019, LucianaMarques'
-author = 'LucianaMarques'
+author = AUTHORS 
 
 # The short X.Y version
 version = ''
@@ -57,7 +60,14 @@ templates_path = ['ytemplates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+# source_suffix = '.rst'
+
+
+source_parsers = {
+    '.md': CommonMarkParser,
+}
+
+source_suffix = '.md'
 
 # The master toctree document.
 master_doc = 'index'
@@ -137,8 +147,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'ChuviscoBot.tex', 'ChuviscoBot Documentation',
-     'LucianaMarques', 'manual'),
+    (master_doc, 'ChuviscoBot.tex', 'Documentação ChuviscoBot',
+     author, 'manual'),
 ]
 
 
@@ -147,7 +157,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'chuviscobot', 'ChuviscoBot Documentation',
+    (master_doc, 'chuviscobot', 'Documentação ChuviscoBot',
      [author], 1)
 ]
 
@@ -159,7 +169,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'ChuviscoBot', 'ChuviscoBot Documentation',
-     author, 'ChuviscoBot', 'One line description of project.',
+     author, 'ChuviscoBot', 'Bot de Telegram para os grupos oficiais do Garoa Hacker Clube',
      'Miscellaneous'),
 ]
 
@@ -187,7 +197,7 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+# intersphinx_mapping = {'https://docs.python.org/': None}
 
 # -- Options for todo extension ----------------------------------------------
 

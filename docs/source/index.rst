@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ChuviscoBot's documentation!
+Bem vindo à Documentação do ChuviscoBot!
 =======================================
 
 .. toctree::
@@ -12,7 +12,7 @@ Welcome to ChuviscoBot's documentation!
 
 
 
-Indices and tables
+Índices e Busca
 ==================
 
 * :ref:`genindex`
