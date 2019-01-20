@@ -366,5 +366,7 @@ class Agenda():
 
 
   def proximos_to_html(self):
-    return "\n".join([f"  - {evento.to_html()}" for evento in self.proximos])
+    return "\n".join([f"  - {evento.to_html()}"
+                      for evento in self.proximos
+                      if evento.dias_para_o_evento() >= 0])
 
