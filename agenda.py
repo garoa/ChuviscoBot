@@ -359,3 +359,12 @@ class Agenda():
           self.proximos.append(Evento(line))
         except:
           print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
+
+
+  def regulares_to_html(self):
+    return "\n".join([f"  - {evento.to_html()}" for evento in self.regulares])
+
+
+  def proximos_to_html(self):
+    return "\n".join([f"  - {evento.to_html()}" for evento in self.proximos])
+

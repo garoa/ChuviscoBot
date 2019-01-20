@@ -55,20 +55,18 @@ def cmd_help(bot, update):
 def cmd_proximos(bot, update):
   """Lista os próximos eventos na agenda do Garoa."""
   agenda.load_Proximos_Eventos()
-  eventos_proximos = "\n".join([f"  - {evento.to_html()}" for evento in agenda.proximos])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
-                   text=f"Próximos eventos:\n{eventos_proximos}\n")
+                   text=f"Próximos eventos:\n{agenda.proximos_to_html()}\n")
 
 
 @bot_command
 def cmd_regulares(bot, update):
   """Lista as atividades recorrentes."""
   agenda.load_Eventos_Regulares()
-  eventos_regulares = "\n".join([f"  - {evento.to_html()}" for evento in agenda.regulares])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
-                   text=f"Eventos regulares:\n{eventos_regulares}\n")
+                   text=f"Eventos regulares:\n{agenda.regulares_to_html()}\n")
 
 
 @bot_command
@@ -76,12 +74,11 @@ def cmd_agenda(bot, update):
   """Lista a agenda completa."""
   agenda.load_Proximos_Eventos()
   agenda.load_Eventos_Regulares()
-  eventos_proximos = "\n".join([f"  - {evento.to_html()}" for evento in agenda.proximos])
-  eventos_regulares = "\n".join([f"  - {evento.to_html()}" for evento in agenda.regulares])
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
-                   text=(f"Próximos eventos:\n{eventos_proximos}\n\n"
-                         f"Eventos regulares:\n{eventos_regulares}\n"))
+                   text=(f"Próximos eventos:\n{agenda.proximos_to_html()}\n\n"
+                         f"Eventos regulares:\n{agenda.regulares_to_html()}\n"))
+
 
 @bot_command
 def cmd_cadastro(bot, update):
