@@ -26,6 +26,8 @@ O padrão de contribuições com projetos open source pelo github é seguir os p
 4) Recomenda-se que cada funcionalidade nova em ou issue sendo resolvida tenha seu desenvolvimento em uma branch separada. 
 5) Além da subdivisão em branchs, recomenda-se também que seus commits mencionem a issue sendo tratada.
 
+Também é recomendado que o repositório original seja [configurado como upstrea](https://help.github.com/articles/configuring-a-remote-for-a-fork/) e que o repositório local esteja sempre [devidamente sincronizado](https://help.github.com/articles/syncing-a-fork/).
+
 ## Documentação
 
 O projeto está em desenvolvimento contínuo, e por isso é fundamental que tenha sua documentação atualizada com frequência. 
