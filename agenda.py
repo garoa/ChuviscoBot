@@ -42,7 +42,7 @@ def replace_wikilinks(original):
     title = b
     if "|" in b:
       pagename, title = b.split("|")
-    com_link = f"{a}<a href='{URL_WIKI}/wiki/{pagename}'>{title}</a>{c}"
+    com_link = "{}<a href='{}/wiki/{}'>{}</a>{}".format(a, URL_WIKI, pagename, title, c)
     if "[[" in com_link and "]]" in com_link:
       return replace_wikilinks(com_link)
     else:
@@ -67,7 +67,7 @@ def replace_external_links(original):
     x = b.split()
     url = x.pop(0)
     title = " ".join(x)
-    com_link = f"{a}<a href='{url}'>{title}</a>{c}"
+    com_link = "{}<a href='{}'>{}</a>{}".format(a, url, title, c)
     if "[" in com_link and "]" in com_link:
       return replace_external_links(com_link)
     else:
@@ -97,11 +97,14 @@ class Evento:
     dia = str(self.dia)
     h = str(self.hora)
     m = str(self.minuto)
-    if self.dia < 10: dia = f"0{dia}"
-    if self.hora < 10: h = f"0{h}"
-    if self.minuto < 10: m = f"0{m}"
+    if self.dia < 10: dia = "0{}".format(dia)
+    if self.hora < 10: h = "0{}".format(h)
+    if self.minuto < 10: m = "0{}".format(m)
     mes = MESES[self.mes - 1]
-    data = f"{self.dia_da_semana}, {dia}/{mes}/{self.ano} {a_partir_das}{h}{sep}{m}"
+    data = "{}, {}/{}/{} {}{}{}{}".format(self.dia_da_semana,
+                                          dia, mes, self.ano,
+                                          a_partir_das,
+                                          h, sep, m)
     return data
 
   def to_html(self):
@@ -125,35 +128,39 @@ class Evento:
         "Sexta",
       ]
       if dia not in ["Sábado", "Domingo"]:
-        dia = f"{DIAS_DA_SEMANA.index(dia)+2}as-feira"
+        dia = "{}as-feira".format(DIAS_DA_SEMANA.index(dia)+2)
 
       h = str(self.hora)
       m = str(self.minuto)
-      if self.hora < 10: h = f"0{h}"
-      if self.minuto < 10: m = f"0{m}"
+      if self.hora < 10: h = "0{}".format(h)
+      if self.minuto < 10: m = "0{}".format(m)
 
-      return f"<strong>{dia}s, {a_partir_das}{h}h{m}:</strong>\n{nome}"
+      return "<strong>{}s, {}{}h{}:</strong>\n{}".format(dia, a_partir_das, h, m, nome)
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
         if self.ordem == -1:
           ordem = "Último"
         else:
-          ordem = f"{self.ordem}º"
+          ordem = "{}º".format(self.ordem)
       else:
-        dia_da_semana = f"{self.dia_da_semana.lower()}-feira"
+        dia_da_semana = "{}-feira".format(self.dia_da_semana.lower())
         if self.ordem == -1:
           ordem = "Última"
         else:
-          ordem = f"{self.ordem}ª"
+          ordem = "{}ª".format(self.ordem)
 
       h = str(self.hora)
       m = str(self.minuto)
-      if self.hora < 10: h = f"0{h}"
-      if self.minuto < 10: m = f"0{m}"
-      return f"<strong>{ordem} {dia_da_semana} do mês, {a_partir_das}{h}h{m}:</strong>\n{nome}"
+      if self.hora < 10: h = "0{h}".format(h)
+      if self.minuto < 10: m = "0{}".format(m)
+      return "<strong>{} {} do mês, {}{}h{}:</strong>\n{}".format(ordem,
+                                                                  dia_da_semana,
+                                                                  a_partir_das, h, m,
+                                                                  nome)
     else:
-      return f"<strong>{self.date_string(sep=':', a_partir_das=a_partir_das)}:</strong> {nome}"
+      return "<strong>{}:</strong> {}".format(self.date_string(sep=':', a_partir_das=a_partir_das),
+                                              nome)
 
 
   def to_wikicode(self):
@@ -177,34 +184,40 @@ class Evento:
         "Sexta",
       ]
       if dia not in ["Sábado", "Domingo"]:
-        dia = f"{DIAS_DA_SEMANA.index(dia)+2}as-feira"
+        dia = "{}as-feira".format(DIAS_DA_SEMANA.index(dia)+2)
 
       h = str(self.hora)
       m = str(self.minuto)
       if self.hora < 10: h = f"0{h}"
       if self.minuto < 10: m = f"0{m}"
-      return f"*'''{dia}s, {a_partir_das}{h}h{m}:'''<br/>{nome}"
+      return "*'''{}s, {}{}h{}:'''<br/>{}".format(dia,
+                                                  a_partir_das, h, m,
+                                                  nome)
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
         if self.ordem == -1:
           ordem = "Último"
         else:
-          ordem = f"{self.ordem}º"
+          ordem = "{}º".format(self.ordem)
       else:
-        dia_da_semana = f"{self.dia_da_semana.lower()}-feira"
+        dia_da_semana = "{}-feira".format(self.dia_da_semana.lower())
         if self.ordem == -1:
           ordem = "Última"
         else:
-          ordem = f"{self.ordem}ª"
+          ordem = "{}ª".format(self.ordem)
 
       h = str(self.hora)
       m = str(self.minuto)
-      if self.hora < 10: h = f"0{h}"
-      if self.minuto < 10: m = f"0{m}"
-      return f"*'''{ordem} {dia_da_semana} do mês, {a_partir_das}{h}h{m}:'''<br/>{nome}"
+      if self.hora < 10: h = "0{}".format(h)
+      if self.minuto < 10: m = "0{}".format(m)
+      return "*'''{} {} do mês, {}{}h{}:'''<br/>{}".format(ordem,
+                                                    dia_da_semana,
+                                                    a_partir_das, h, m,
+                                                    nome)
     else:
-      return f"*'''{self.date_string(sep=':', a_partir_das=a_partir_das)}:''' {nome}"
+      return "*'''{}:''' {}".format(self.date_string(sep=':', a_partir_das=a_partir_das),
+                                    nome)
 
 
   def parse_evento(self, line):
@@ -346,7 +359,7 @@ class Agenda():
         try:
           self.regulares.append(Evento(line, recorrencia))
         except:
-          print(f"Falha ao tentar parsear linha da página 'Eventos Regulares':\n===\n{line}\n===")
+          print("Falha ao tentar parsear linha da página 'Eventos Regulares':\n===\n{}\n===".format(line))
 
 
   def load_Proximos_Eventos(self):
@@ -358,15 +371,15 @@ class Agenda():
         try:
           self.proximos.append(Evento(line))
         except:
-          print(f"Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{line}\n===")
+          print("Falha ao tentar parsear linha da página 'Próximos Eventos':\n===\n{}\n===".format(line))
 
 
   def regulares_to_html(self):
-    return "\n".join([f"  - {evento.to_html()}" for evento in self.regulares])
+    return "\n".join(["  - {}".format(evento.to_html()) for evento in self.regulares])
 
 
   def proximos_to_html(self):
-    return "\n".join([f"  - {evento.to_html()}"
+    return "\n".join(["  - {}".format(evento.to_html())
                       for evento in self.proximos
                       if evento.dias_para_o_evento() >= 0])
 
