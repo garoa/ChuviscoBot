@@ -32,7 +32,7 @@ from bot_setup import (bot_setup,
 debug_chat_id = 0
 
 if len(sys.argv) not in [2, 3]:
-  print(f"Usage:    {sys.argv[0]} TOKEN [CHAT_ID]")
+  print("Usage:    {} TOKEN [CHAT_ID]".format(sys.argv[0]))
   print("          TOKEN: Valor de token gerado pelo BotFather após o registro de um novo bot.")
   print("          CHAT_ID: Grupo ou conversa para onde o bot deve mandar mensagens de debugging.")
   sys.exit(-1)
@@ -47,8 +47,8 @@ else:
 @bot_command
 def cmd_help(bot, update):
   """Exibe os comandos disponíveis."""
-  cmd_docs = "\n".join([f"  <b>/{name}</b> - {doc}" for name, doc in BOT_CMDS.items()])
-  update.message.reply_text(f"Comandos disponíveis:\n{cmd_docs}", parse_mode="HTML")
+  cmd_docs = "\n".join(["  <b>/{}</b> - {}".format(name, doc) for name, doc in BOT_CMDS.items()])
+  update.message.reply_text("Comandos disponíveis:\n{}".format(cmd_docs), parse_mode="HTML")
 
 
 @bot_command
@@ -57,7 +57,7 @@ def cmd_proximos(bot, update):
   agenda.load_Proximos_Eventos()
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
-                   text=f"Próximos eventos:\n{agenda.proximos_to_html()}\n")
+                   text="Próximos eventos:\n{}\n".format(agenda.proximos_to_html()))
 
 
 @bot_command
@@ -66,7 +66,7 @@ def cmd_regulares(bot, update):
   agenda.load_Eventos_Regulares()
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
-                   text=f"Eventos regulares:\n{agenda.regulares_to_html()}\n")
+                   text="Eventos regulares:\n{}\n".format(agenda.regulares_to_html()))
 
 
 @bot_command
@@ -76,8 +76,8 @@ def cmd_agenda(bot, update):
   agenda.load_Eventos_Regulares()
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
-                   text=(f"Próximos eventos:\n{agenda.proximos_to_html()}\n\n"
-                         f"Eventos regulares:\n{agenda.regulares_to_html()}\n"))
+                   text=("Próximos eventos:\n{}\n\n".format(agenda.proximos_to_html())
+                         "Eventos regulares:\n{}\n".agenda.regulares_to_html()))
 
 
 @bot_command
@@ -127,11 +127,13 @@ def checa_se_vai_rolar_evento(bot, job):
     elif not e.confirmado and dias >= 1 and dias <= 3:
       chat_id = get_chat_id(e.group_link)
       if chat_id:
-        data = f"{e.dia}/{MESES[e.mes - 1]}/{e.ano}"
+        data = "{}/{}/{}".format(e.dia,
+                                 MESES[e.mes - 1],
+                                 e.ano)
         bot.send_message(chat_id=chat_id,
                          parse_mode="HTML",
-                         text=(f"O evento '{e.nome}' está agendado para {data}."
-                                " Alguém aqui confirma que vai rolar mesmo?"),
+                         text=("O evento '{}' está agendado para {}.".format(e.nome, data)
+                               " Alguém aqui confirma que vai rolar mesmo?"),
                          reply_markup=ReplyKeyboardRemove(
                          keyboard=[[KeyboardButton(text="Tá confirmado, vai rolar!"),
                                     KeyboardButton(text="Não... foi cancelado.")]]))
