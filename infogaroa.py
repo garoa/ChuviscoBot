@@ -28,7 +28,7 @@ import json
 class InfoGaroa:
   def __init__(self, END_POINT="http://garoahc.appspot.com/status"):
     self.f = request.urlopen(END_POINT)
-    self.data = json.loads(self.f.readline())
+    self.data = json.loads(self.f.readline().decode("UTF-8"))
 
   def retorna_tel(self):
     return self.data.get("phone")
