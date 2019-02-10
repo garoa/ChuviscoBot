@@ -84,6 +84,13 @@ def cmd_agenda(bot, update):
 @bot_command
 def cmd_cadastro(bot, update):
   """Cadastra um novo evento na wiki"""
+  bot.send_message(chat_id=update.message.chat_id,
+                   parse_mode="HTML",
+                   text=("Este comando ainda não está implementado."
+                         " Mas, se você quiser, pode nos ajudar a desenvolver"
+                         " essa parte do código do ChuviscoBot."
+                         " Veja os detalhes em"
+                         " https://github.com/garoa/ChuviscoBot/issues/1"))
 
 
 @bot_command
