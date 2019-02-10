@@ -27,7 +27,7 @@ from agenda import Agenda, MESES
 from bot_setup import (bot_setup,
                        bot_run,
                        bot_command,
-                       bot_task_daily,
+#                       bot_task_daily,
                        BOT_CMDS)
 debug_chat_id = 0
 
