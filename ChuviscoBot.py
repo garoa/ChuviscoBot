@@ -133,11 +133,11 @@ def checa_se_vai_rolar_evento(bot, job):
                                  e.ano)
         bot.send_message(chat_id=chat_id,
                          parse_mode="HTML",
-                         text=("O evento '{}' está agendado para {}.".format(e.nome, data)
-                               " Alguém aqui confirma que vai rolar mesmo?"),
+                         text=("O evento '{}' está agendado para {}."
+                               " Alguém aqui confirma que vai rolar mesmo?").format(e.nome, data),
                          reply_markup=ReplyKeyboardRemove(
-                         keyboard=[[KeyboardButton(text="Tá confirmado, vai rolar!"),
-                                    KeyboardButton(text="Não... foi cancelado.")]]))
+                           keyboard=[[KeyboardButton(text="Tá confirmado, vai rolar!"),
+                                      KeyboardButton(text="Não... foi cancelado.")]]))
         # TODO: ler a resposta do usuário e fazer alguma coisa.
 
 
