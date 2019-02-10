@@ -90,10 +90,11 @@ def cmd_cadastro(bot, update):
 def cmd_status(bot, update):
   """Verifica se o garoa está aberto ou fechado"""
   infogaroa = InfoGaroa()
-  if infogaroa.status() == False:
-    sticker_id = 'CAADAQAD8AADBO9jB1DAGOCS82CUAg' # fechado
-  else:
+  if infogaroa.status():
     sticker_id = 'CAADAQAD8QADBO9jB8Q5ImC_h8fqAg' # aberto
+  else:
+    sticker_id = 'CAADAQAD8AADBO9jB1DAGOCS82CUAg' # fechado
+
   bot.send_sticker(chat_id=update.message.chat_id,
                    sticker=sticker_id,
                    disable_notification=True)
