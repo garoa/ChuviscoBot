@@ -84,7 +84,7 @@ def cmd_agenda(bot, update):
 @bot_command
 def cmd_cadastro(bot, update):
   """Cadastra um novo evento na wiki"""
-  pass
+
 
 @bot_command
 def cmd_status(bot, update):
