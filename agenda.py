@@ -152,7 +152,7 @@ class Evento:
 
       h = str(self.hora)
       m = str(self.minuto)
-      if self.hora < 10: h = "0{h}".format(h)
+      if self.hora < 10: h = "0{}".format(h)
       if self.minuto < 10: m = "0{}".format(m)
       return "<strong>{} {} do mês, {}{}h{}:</strong>\n{}".format(ordem,
                                                                   dia_da_semana,

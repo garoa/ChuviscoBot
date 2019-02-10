@@ -77,7 +77,7 @@ def cmd_agenda(bot, update):
   bot.send_message(chat_id=update.message.chat_id,
                    parse_mode="HTML",
                    text=("Próximos eventos:\n{}\n\n".format(agenda.proximos_to_html())
-                         "Eventos regulares:\n{}\n".agenda.regulares_to_html()))
+                         "Eventos regulares:\n{}\n".format(agenda.regulares_to_html()))
 
 
 @bot_command
