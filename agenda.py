@@ -87,6 +87,7 @@ MESES = ["JAN", "FEV", "MAR", "ABR",
 
 class Evento:
   def __init__(self, line, recorrencia=False):
+    self.local = None
     self.a_partir = None
     if recorrencia:
       self.parse_evento_regular(line, recorrencia)
