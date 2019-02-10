@@ -55,6 +55,7 @@ def test_replace_links(given, want):
    # Um caso típico:
   ("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]",
    {"dia_da_semana": "Quinta",
+            "local": None,
               "dia": 17,
               "mes": 1,
               "ano": 2019,
@@ -63,6 +64,7 @@ def test_replace_links(given, want):
    # com dia e hora menores que dez:
   ("*'''Sábado, 7/DEZ/2019 9:00:''' [[Noite do Arduino]]",
    {"dia_da_semana": "Sábado",
+            "local": None,
               "dia": 7,
               "mes": 12,
               "ano": 2019,
@@ -71,6 +73,7 @@ def test_replace_links(given, want):
    # com dia e hora menores que dez (com um zero à esquerda):
   ("*'''Sábado, 07/DEZ/2019 09:00:''' [[Noite do Arduino]]",
    {"dia_da_semana": "Sábado",
+            "local": None,
               "dia": 7,
               "mes": 12,
               "ano": 2019,
@@ -79,6 +82,7 @@ def test_replace_links(given, want):
    # Com tag <br/>:
   ("*'''Quinta, 17/JAN/2019 19:30:'''<br/>[[Noite do Arduino]]",
    {"dia_da_semana": "Quinta",
+            "local": None,
               "dia": 17,
               "mes": 1,
               "ano": 2019,
@@ -87,10 +91,20 @@ def test_replace_links(given, want):
    # Contendo 'a partir das' em evento de data fixa:
    ("*'''Sábado, 12/MAR/2020 a partir das 16:00:''' [[Ctf_no_garoa|Capture The Flag]]",
    {"dia_da_semana": "Sábado",
+            "local": None,
               "dia": 12,
               "mes": 3,
               "ano": 2020,
 	 "a_partir": True,
+             "hora": 16,
+           "minuto": 00}),
+  # Incluindo local:
+  ("*'''Domingo, 10/FEV/2019 16:00:''' <small>(sala multi-uso)</small> Cine Garoa: [[Cine Garoa|\"GATTACA\"]]",
+   {"dia_da_semana": "Domingo",
+            "local": "sala multi-uso",
+              "dia": 10,
+              "mes": 2,
+              "ano": 2019,
              "hora": 16,
            "minuto": 00}),
 ])
@@ -98,6 +112,7 @@ def test_parse_evento(given, want):
   from agenda import Evento
   got = Evento(given)
   assert want["dia_da_semana"] == got.dia_da_semana
+  assert want["local"] == got.local
   assert want["dia"] == got.dia
   assert want["mes"] == got.mes
   assert want["ano"] == got.ano

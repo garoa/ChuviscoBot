@@ -224,6 +224,14 @@ class Evento:
     head, tail = line.strip().split(":'''")
 
     self.nome = replace_links(tail).strip()
+    if "<small>(" in self.nome and ")</small>" in self.nome:
+      a, self.nome = self.nome.split(")</small>")
+      b, self.local = a.split("<small>(").strip()
+      self.nome = (b + self.nome).strip()
+      # Acho que "b" será espaço em branco na maioria dos casos.
+      # Estou apenas sendo cauteloso aqui.
+    else:
+      self.local = None
     self.recorrencia = None
     self.data = head.split("*'''")[1]
     self.parse_data_de_evento()
