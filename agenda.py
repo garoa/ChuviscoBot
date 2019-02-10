@@ -188,8 +188,8 @@ class Evento:
 
       h = str(self.hora)
       m = str(self.minuto)
-      if self.hora < 10: h = f"0{h}"
-      if self.minuto < 10: m = f"0{m}"
+      if self.hora < 10: h = "0{}".format(h)
+      if self.minuto < 10: m = "0{}".format(m)
       return "*'''{}s, {}{}h{}:'''<br/>{}".format(dia,
                                                   a_partir_das, h, m,
                                                   nome)
