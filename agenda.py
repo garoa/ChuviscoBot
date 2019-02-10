@@ -117,6 +117,11 @@ class Evento:
     else:
       a_partir_das = ""
 
+    if self.local:
+      local = "({}) ".format(self.local)
+    else:
+      local = ""
+
     if self.recorrencia == "Semanal":
       dia = self.dia_da_semana.lower()
       dia = dia[0].upper() + dia[1:]
@@ -135,7 +140,7 @@ class Evento:
       if self.hora < 10: h = "0{}".format(h)
       if self.minuto < 10: m = "0{}".format(m)
 
-      return "<strong>{}s, {}{}h{}:</strong>\n{}".format(dia, a_partir_das, h, m, nome)
+      return "<strong>{}s, {}{}h{}:</strong>\n{}{}".format(dia, a_partir_das, h, m, local, nome)
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
@@ -154,13 +159,15 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = "0{}".format(h)
       if self.minuto < 10: m = "0{}".format(m)
-      return "<strong>{} {} do mês, {}{}h{}:</strong>\n{}".format(ordem,
-                                                                  dia_da_semana,
-                                                                  a_partir_das, h, m,
-                                                                  nome)
+      return "<strong>{} {} do mês, {}{}h{}:</strong>\n{}{}".format(ordem,
+                                                                    dia_da_semana,
+                                                                    a_partir_das, h, m,
+                                                                    local,
+                                                                    nome)
     else:
-      return "<strong>{}:</strong> {}".format(self.date_string(sep=':', a_partir_das=a_partir_das),
-                                              nome)
+      return "<strong>{}:</strong> {}{}".format(self.date_string(sep=':', a_partir_das=a_partir_das),
+                                                local,
+                                                nome)
 
 
   def to_wikicode(self):
@@ -226,7 +233,8 @@ class Evento:
     self.nome = replace_links(tail).strip()
     if "<small>(" in self.nome and ")</small>" in self.nome:
       a, self.nome = self.nome.split(")</small>")
-      b, self.local = a.split("<small>(").strip()
+      b, self.local = a.split("<small>(")
+      self.local = self.local.strip()
       self.nome = (b + self.nome).strip()
       # Acho que "b" será espaço em branco na maioria dos casos.
       # Estou apenas sendo cauteloso aqui.
