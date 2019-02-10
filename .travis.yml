@@ -12,5 +12,7 @@ install:
 - pip install pytest
 
 script:
-- pylint *.py
+- export WONT_FIX=fixme,bad-indentation,invalid-name
+- export MAYBE_LATER=trailing-whitespace,bad-continuation,line-too-long,missing-docstring,bare-except,no-else-return,too-many-instance-attributes,multiple-statements,too-many-branches,attribute-defined-outside-init
+- pylint --disable=$WONT_FIX,$MAYBE_LATER *.py
 - pytest --verbose
