@@ -7,7 +7,10 @@ branches:
   - master
 
 install:
-- pip install pytest python-telegram-bot pywikibot
+- pip install -r requeriments.txt
+- pip install pylint
+- pip install pytest
 
 script:
+- pylint *.py
 - pytest --verbose
