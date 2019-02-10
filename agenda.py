@@ -180,6 +180,11 @@ class Evento:
     else:
       a_partir_das = ""
 
+    if self.local:
+      local = "<small>({})</small> ".format(self.local)
+    else:
+      local = ""
+
     if self.recorrencia == "Semanal":
       dia = self.dia_da_semana.lower()
       dia = dia[0].upper() + dia[1:]
@@ -197,9 +202,9 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = "0{}".format(h)
       if self.minuto < 10: m = "0{}".format(m)
-      return "*'''{}s, {}{}h{}:'''<br/>{}".format(dia,
-                                                  a_partir_das, h, m,
-                                                  nome)
+      return "*'''{}s, {}{}h{}:'''<br/>{}{}".format(dia,
+                                                    a_partir_das, h, m,
+                                                    local, nome)
     elif self.recorrencia == "Mensal":
       if self.dia_da_semana in ["Sábado", "Domingo"]:
         dia_da_semana = self.dia_da_semana.lower()
@@ -218,13 +223,13 @@ class Evento:
       m = str(self.minuto)
       if self.hora < 10: h = "0{}".format(h)
       if self.minuto < 10: m = "0{}".format(m)
-      return "*'''{} {} do mês, {}{}h{}:'''<br/>{}".format(ordem,
-                                                    dia_da_semana,
-                                                    a_partir_das, h, m,
-                                                    nome)
+      return "*'''{} {} do mês, {}{}h{}:'''<br/>{}{}".format(ordem,
+                                                      dia_da_semana,
+                                                      a_partir_das, h, m,
+                                                      local, nome)
     else:
-      return "*'''{}:''' {}".format(self.date_string(sep=':', a_partir_das=a_partir_das),
-                                    nome)
+      return "*'''{}:''' {}{}".format(self.date_string(sep=':', a_partir_das=a_partir_das),
+                                      local, nome)
 
 
   def parse_evento(self, line):

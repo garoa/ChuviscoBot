@@ -346,12 +346,25 @@ def test_evento_to_html(given, want):
              "hora": 14,
            "minuto": 30},
   "*'''Sábado, 30/OUT/2019 a partir das 14:30:''' Alguma coisa legal..."),
+
+  # Evento contendo informação de local:
+  ({"dia_da_semana": "Sábado",
+            "local": "sala multi-uso",
+              "dia": 30,
+              "mes": 10,
+              "ano": 2019,
+             "nome": "Alguma coisa legal...",
+         "a_partir": True,
+             "hora": 14,
+           "minuto": 30},
+  "*'''Sábado, 30/OUT/2019 a partir das 14:30:''' <small>(sala multi-uso)</small> Alguma coisa legal..."),
 ])
 def test_evento_to_wikicode(given, want):
   FOO_WIKICODE = "*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]"
   from agenda import Evento
   e = Evento(FOO_WIKICODE)
   e.dia_da_semana = given.get("dia_da_semana")
+  e.local = given.get("local")
   e.dia = given.get("dia")
   e.mes = given.get("mes")
   e.ano = given.get("ano")
