@@ -382,4 +382,3 @@ class Agenda():
     return "\n".join(["  - {}".format(evento.to_html())
                       for evento in self.proximos
                       if evento.dias_para_o_evento() >= 0])
-

@@ -1,6 +1,6 @@
 from pytest import mark
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
   # Substitui um wikilink:
   ("hoje tem [[Noite do Arduino]] no Garoa",
    "hoje tem <a href='https://garoa.net.br/wiki/Noite do Arduino'>Noite do Arduino</a> no Garoa"),
@@ -14,7 +14,7 @@ def test_replace_wikilinks(given, want):
   assert want == got
 
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
   # Substitui um link externo:
   ("[https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/ Organização & Flush no Garoa]",
    "<a href='https://www.meetup.com/pt-BR/Garoa-Hacker-Clube/events/257587273/'>Organização & Flush no Garoa</a>"),
@@ -25,7 +25,7 @@ def test_replace_external_links(given, want):
   assert want == got
 
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
   # Substitui wikilink:
   ("hoje tem [[Noite do Arduino]] no Garoa",
    "hoje tem <a href='https://garoa.net.br/wiki/Noite do Arduino'>Noite do Arduino</a> no Garoa"),
@@ -51,7 +51,7 @@ def test_replace_links(given, want):
   assert want == got
 
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
    # Um caso típico:
   ("*'''Quinta, 17/JAN/2019 19:30:''' [[Noite do Arduino]]",
    {"dia_da_semana": "Quinta",
@@ -105,7 +105,7 @@ def test_parse_evento(given, want):
   assert want["minuto"] == got.minuto
 
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
   # Evento pontual:
   ({"dia_da_semana": "Sexta",
              "nome": "Festa!",
@@ -207,7 +207,7 @@ def test_evento_to_html(given, want):
   assert want == got
 
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
   # Evento pontual:
   ({"dia_da_semana": "Sexta",
              "nome": "Festa!",
@@ -309,7 +309,7 @@ def test_evento_to_wikicode(given, want):
   assert want == got
 
 
-@mark.parametrize("given,want",[
+@mark.parametrize("given,want", [
    # Atividade mensal:
    (("*'''3ª terça-feira do mês, 19h30:''' [[CMC|Reunião do Conselho Manda-Chuva]]", "Mensal"),
    {"dia_da_semana": "Terça",

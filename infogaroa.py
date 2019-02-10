@@ -21,25 +21,23 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #  
-#  
-
+#
 from urllib import request
 import json
 
 class InfoGaroa:
-  def __init__(self, END_POINT = 'http://garoahc.appspot.com/status' ):
+  def __init__(self, END_POINT="http://garoahc.appspot.com/status"):
     self.f = request.urlopen(END_POINT)
     self.data = json.loads(self.f.readline())
-    
+
   def retorna_tel(self):
-    return self.data.get('phone')
+    return self.data.get("phone")
 
   def retorna_twitter(self):
-    return str('@') + self.data.get('twitter')
-		 
+    return "@{}".format(self.data.get("twitter"))
+
   def retorna_end(self):
-    return self.data.get('space')
-		
+    return self.data.get("space")
+
   def status(self):
-    return self.data.get('open')
-	
+    return self.data.get("open")
